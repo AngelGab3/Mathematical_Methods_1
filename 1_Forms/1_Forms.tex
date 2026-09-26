@@ -15,7 +15,6 @@
 \usepackage{graphicx}
 \usepackage{microtype}
 \usepackage{needspace}
-
 % ============ PALETTE: BLACK, ORANGE, AND CREAM ============
 \definecolor{blackmain}{HTML}{1A1A1A}
 \definecolor{orangeacc}{HTML}{E65C00}
@@ -23,7 +22,6 @@
 \definecolor{orangebg}{HTML}{FFF4EB}
 \definecolor{graymuted}{HTML}{7A746E}
 \definecolor{pureblack}{HTML}{0D0D0D}
-
 % ============ HEADERS AND FOOTERS ============
 \setlength{\headheight}{24pt}
 \pagestyle{fancy}
@@ -33,10 +31,8 @@
 \fancyfoot[C]{\textcolor{graymuted}{\thepage}}
 \renewcommand{\headrulewidth}{0.8pt}
 \renewcommand{\headrule}{\hbox to\headwidth{\color{orangeacc}\leaders\hrule height \headrulewidth\hfill}}
-
 \setlist[itemize]{label={\small\textcolor{orangeacc}{$\blacksquare$}},leftmargin=1.6em}
 \setlist[enumerate]{label={\textcolor{orangeacc}{\arabic*.}},leftmargin=1.8em}
-
 % ============ TITLES ============
 \newcommand{\manualsection}[1]{%
   \Needspace{16\baselineskip}%
@@ -45,12 +41,10 @@
   \noindent{\color{orangeacc}\rule{\linewidth}{1.4pt}}\par\nobreak
   \vspace{0.15cm}
 }
-
 \newcommand{\manualsubsection}[1]{%
   \par\vspace{0.2cm}\noindent{\bfseries\color{orangeacc} #1}\par\nobreak
   \vspace{0.12cm}
 }
-
 % ============ CONTENT BOXES ============
 \newtcolorbox{infobox}[2][orangeacc]{
   enhanced,
@@ -61,7 +55,6 @@
   before upper={\textbf{\color{#1!95!black}\large #2}\par\nobreak
     {\color{#1!50}\rule{\linewidth}{0.6pt}}\par\nobreak\smallskip}
 }
-
 \newtcolorbox{examplebox}[1]{
   enhanced,
   colback=orangebg,colframe=orangeacc!85!black,
@@ -71,7 +64,6 @@
   before upper={\textbf{\color{orangeacc!95!black}\large #1}\par\nobreak
     {\color{orangeacc!40}\rule{\linewidth}{0.6pt}}\par\nobreak\smallskip}
 }
-
 \newtcolorbox{theorembox}[1]{
   enhanced,
   colback=creambg!70!white,colframe=pureblack,
@@ -81,12 +73,11 @@
   before upper={\textbf{\color{pureblack}\large #1}\par\nobreak
     {\color{orangeacc}\rule{\linewidth}{0.8pt}}\par\nobreak\smallskip}
 }
-
 \newcommand{\term}[1]{\textbf{\color{orangeacc}#1}}
 \newcommand{\termb}[1]{\textbf{\color{blackmain}#1}}
 \renewcommand{\familydefault}{\rmdefault}
+\linespread{1.05}
 \tikzset{every node/.append style={font=\rmfamily}}
-
 \begin{document}
 \setlength{\abovedisplayskip}{6pt}
 \setlength{\belowdisplayskip}{6pt}
@@ -101,7 +92,6 @@
 {\Large\textcolor{orangeacc}{\textbf{Differential 1-forms}}}\\[0.4cm]
 {\large\textcolor{graymuted}{Gabriel Velázquez}}\\[0.25cm]
 \end{center}
-
 \manualsection{1. Covectors and 1-forms}
 A tangent vector describes a direction and a magnitude at a point. A 1-form evaluates that vector and produces a real number in a linear way.
 \begin{infobox}[orangeacc]{Definition 1.1 (Covector and covector field)}
@@ -111,7 +101,6 @@ Let $\Omega\subseteq\mathbb{R}^n$ be open. A \term{covector} at $p\in\Omega$ is 
 \]
 The set of these functionals is the \term{cotangent space}
 $T_p^*\Omega=(T_p\Omega)^*$, the dual of the tangent space.
-
 A \term{differential 1-form} $\omega$ assigns a covector $\omega_p$ to each point $p$, with smooth coefficient functions in the case of a smooth form.
 \end{infobox}
 Linearity refers to vectors based at the same point: for $u_p,v_p\in T_p\Omega$ and $a,b\in\mathbb{R}$,
@@ -139,7 +128,6 @@ For vector fields $X,Y$ and scalar functions $f,g$,
 \]
 Thus, a 1-form transforms vector fields into functions by pointwise evaluation.
 \end{theorembox}
-
 \newpage
 \manualsection{2. Coordinate differentials and the dual basis}
 Let $x^1,\ldots,x^n$ be the Cartesian coordinate functions. We write
@@ -188,7 +176,6 @@ In Cartesian coordinates, the value $dx^i(v_p)=v^i$ does not explicitly depend o
 \caption{The forms $dx$ and $dy$ return the components of the vector based at $p$. The horizontal and vertical arrows represent vector components, not the 1-forms themselves.}
 \end{figure}
 \FloatBarrier
-
 \newpage
 \manualsection{3. Expression and evaluation of a 1-form}
 \begin{theorembox}{Proposition 3.1 (Coordinate expression)}
@@ -231,7 +218,6 @@ In $\mathbb{R}^2$, let $\omega=y\,dx+2x\,dy$ and $X=x\partial_x-\partial_y$. The
 For $p=(1,3)$, $\omega_p=3(dx)_p+2(dy)_p$ and $X(p)=(1,-1)_p$, so $\omega_p(X(p))=3-2=1$.
 Moreover, $\omega(\partial_x)=y$ and $\omega(\partial_y)=2x$ recover the coefficients.
 \end{examplebox}
-
 \newpage
 \manualsection{4. The differential $df$ and exact forms}
 \begin{theorembox}{Theorem 4.1 (Coordinate expression of the differential)}
@@ -274,8 +260,6 @@ For any vector field $X$, $df(X)=X[f]$. If $\alpha$ is a differentiable curve co
 =\frac{d}{dt}\bigl(f(\alpha(t))\bigr).
 \]
 Evaluating $df$ on the velocity measures how $f$ changes along the curve.
-
-
 \newpage
 \manualsection{5. The operator $d$: products and compositions}
 The operator $d$ transforms a scalar function $f$ into the 1-form $df$. The usual differentiation rules thus become equalities between 1-forms. We assume that the functions are differentiable on their domains.
@@ -318,7 +302,6 @@ d(x^2y+z^2)=2xy\,dx+x^2\,dy+2z\,dz.
 \]
 \end{examplebox}
 In $f\,dg$, the function multiplies the form: $(f\,dg)_p(v_p)=f(p)(dg)_p(v_p)$. Two differentials are not multiplied together; $d(fg)$ is a 1-form.
-
 \newpage
 \manualsection{5. The operator $d$ (continued)}
 \begin{theorembox}{Proposition 5.3 (Chain rule)}
@@ -370,7 +353,6 @@ d\!\left(\frac{f}{g}\right)=\frac{1}{g}\,df-\frac{f}{g^2}\,dg
 =\frac{g\,df-f\,dg}{g^2}.
 \]
 \end{infobox}
-
 \newpage
 \manualsection{6. Indices and coordinate changes}
 The components of a vector and a 1-form change with the coordinates, although the geometric object and its evaluation remain the same.
@@ -383,6 +365,21 @@ X=X^i\partial_i,\qquad \omega=\omega_i\,dx^i,
 The repeated index is a \term{dummy index}: it may be renamed without changing the expression. Free indices must match on both sides of an equality.
 \end{infobox}
 The vector components $X^i$ are \term{contravariant}; the components $\omega_i$ of a 1-form are \term{covariant}. The tangent basis $\partial_i$ and the cotangent basis $dx^i$ transform so as to compensate for the change in their respective components.
+\manualsubsection{A fixed vector, different coordinate descriptions}
+Think of a tangent vector as a fixed arrow at a point $p$, for example the velocity of a particle at one instant. The arrow is the geometric object; its components depend on the coordinates used to describe it.
+Let $\alpha(t)$ be a curve with $\alpha(0)=p$ and $v_p=\alpha'(0)$. In coordinates $x$ and $u$, the same motion has components
+\[
+v_x^i=\left.\frac{d(x^i\circ\alpha)}{dt}\right|_{t=0},
+\qquad
+v_u^a=\left.\frac{d(u^a\circ\alpha)}{dt}\right|_{t=0}.
+\]
+Applying the chain rule to $u^a=u^a(x)$ gives
+\[
+\boxed{v_u^a=\frac{\partial u^a}{\partial x^i}(p)\,v_x^i.}
+\]
+Thus, the transformation law for vector components is simply the chain rule for the velocity of the same curve. With the convention $J=\partial x/\partial u$ used below, this is $\boldsymbol v_u=J(p)^{-1}\boldsymbol v_x$. The Jacobian converts the components of a tangent vector locally at $p$.
+\newpage
+\manualsection{6. Indices and coordinate changes (continued)}
 \manualsubsection{General rules without matrix ambiguity}
 Let $x=(x^1,\ldots,x^n)$ and $u=(u^1,\ldots,u^n)$ be two local coordinate systems, with invertible change of coordinates $x=x(u)$. Set
 \[
@@ -415,7 +412,28 @@ Contracting a covariant index with a contravariant one gives
 =\omega_{x,i}X_x^i.
 \]
 An index repeated twice as a superscript or twice as a subscript does not represent a contraction under this convention. For example, the inner product is written $g_{ij}A^iB^j$; in an orthonormal Cartesian basis it can be simplified to $\sum_i A^iB^i$, because there $g_{ij}=\delta_{ij}$.
-
+\newpage
+\manualsection{6. Connection with classical mechanics}
+\manualsubsection{Generalized coordinates and generalized velocities}
+In classical mechanics, a configuration is a point of configuration space. Generalized coordinates $q^1,\ldots,q^m$ are local coordinates on that space; they may be lengths, angles, or other independent parameters. A motion is a curve $q(t)$, and its tangent vector is
+\[
+\dot\alpha(t)=\dot q^a(t)\,\partial_{q^a}\big|_{\alpha(t)},
+\qquad dq^a(\dot\alpha)=\dot q^a.
+\]
+The numbers $\dot q^a$ are the \term{generalized velocities}. They are coordinate components, so they need not be speeds measured along unit vectors. For example, $\dot\theta$ is an angular velocity, whereas $r\dot\theta$ is a tangential speed.
+For a particle with a time-independent position map $\mathbf r=\mathbf r(q)$, the physical velocity is
+\[
+\boxed{\mathbf v=\frac{d\mathbf r}{dt}
+=\frac{\partial\mathbf r}{\partial q^a}\,\dot q^a.}
+\]
+For an unconstrained particle with $m=n$ and an invertible coordinate map, this is precisely $\boldsymbol v_x=J\dot{\boldsymbol q}$, with $J=\partial x/\partial q$, or $\dot{\boldsymbol q}=J^{-1}\boldsymbol v_x$. With constraints, $m$ may be smaller than the number of ambient Cartesian coordinates: the chain rule still holds, but the position Jacobian is then rectangular and has no ordinary inverse. For explicitly time-dependent maps $\mathbf r(q,t)$, the velocity also includes $\partial\mathbf r/\partial t$.
+\manualsubsection{Forces as 1-forms: virtual work and power}
+For a force $\mathbf F$ on a particle, the Euclidean inner product defines a work 1-form on configuration space:
+\[
+\eta=\mathbf F\cdot d\mathbf r=Q_a\,dq^a,
+\qquad
+\boxed{Q_a=\mathbf F\cdot\frac{\partial\mathbf r}{\partial q^a}.}
+\]
 \newpage
 \manualsection{7. Example: polar coordinates}
 Consider $x=r\cos\theta$, $y=r\sin\theta$, with $r>0$ and a smooth local choice of the angle. The origin lies outside this chart.
@@ -469,7 +487,6 @@ These formulas verify that $dr(\partial_r)=d\theta(\partial_\theta)=1$ and $dr(\
 \begin{pmatrix}dr\\d\theta\end{pmatrix}
 =J^{-1}\begin{pmatrix}dx\\dy\end{pmatrix}.
 \]
-
 \newpage
 \manualsection{8. Verification in both coordinate systems}
 \begin{examplebox}{Example 8.1 (A 1-form and a vector)}
@@ -479,7 +496,6 @@ Consider
 \qquad V=\partial_x.
 \]
 In Cartesian coordinates, $\omega(V)=x$.
-
 In polar coordinates, the components of the form are
 \begin{align*}
 \omega_r&=x\cos\theta+y\sin\theta=r,\\
@@ -513,5 +529,4 @@ The differential $df$ is a covector. In Euclidean space, the inner product relat
 \]
 This identification uses the metric; the definition of $df$ as a linear functional does not require it.
 \end{infobox}
-
 \end{document}
