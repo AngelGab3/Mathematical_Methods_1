@@ -1,1 +1,307 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[provide=*,english]{babel}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,angles,quotes,calc,babel}
+\usepackage{graphicx}
+\usepackage{needspace}
 
+% Palette and layout of the reference document.
+\definecolor{blackmain}{HTML}{1A1A1A}
+\definecolor{orangeacc}{HTML}{E65C00}
+\definecolor{creambg}{HTML}{FBF8F1}
+\definecolor{orangebg}{HTML}{FFF4EB}
+\definecolor{graymuted}{HTML}{7A746E}
+\definecolor{pureblack}{HTML}{0D0D0D}
+
+\setlength{\headheight}{24pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{blackmain}{\textbf{\small Mathematical Methods I}}}
+\fancyhead[R]{\textcolor{orangeacc}{\textbf{\small The metric and tensors}}}
+\fancyfoot[C]{\textcolor{graymuted}{\thepage}}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{orangeacc}\leaders\hrule height \headrulewidth\hfill}}
+
+\setlist[itemize]{label={\small\textcolor{orangeacc}{$\blacksquare$}},leftmargin=1.6em}
+\setlist[enumerate]{label={\textcolor{orangeacc}{\arabic*.}},leftmargin=1.8em}
+
+\newcommand{\manualsection}[1]{%
+  \Needspace{13\baselineskip}%
+  \vspace{0.35cm}
+  \par\noindent{\Large\bfseries\color{blackmain} #1}\par\nobreak
+  \noindent{\color{orangeacc}\rule{\linewidth}{1.4pt}}\par\nobreak
+  \vspace{0.15cm}
+}
+\newcommand{\manualsubsection}[1]{%
+  \par\vspace{0.2cm}\noindent{\bfseries\color{orangeacc} #1}\par\nobreak
+  \vspace{0.12cm}
+}
+\newtcolorbox{infobox}[2][orangeacc]{
+  enhanced,colback=creambg,colframe=#1!90!black,
+  boxrule=1pt,arc=2mm,left=9pt,right=9pt,top=5pt,bottom=5pt,
+  before skip=7pt,after skip=7pt,
+  before upper={\textbf{\color{#1!95!black}\large #2}\par\nobreak
+    {\color{#1!50}\rule{\linewidth}{0.6pt}}\par\nobreak\smallskip}
+}
+\newtcolorbox{examplebox}[1]{
+  enhanced,colback=orangebg,colframe=orangeacc!85!black,
+  boxrule=1pt,arc=2mm,left=9pt,right=9pt,top=5pt,bottom=5pt,
+  before skip=7pt,after skip=7pt,
+  before upper={\textbf{\color{orangeacc!95!black}\large #1}\par\nobreak
+    {\color{orangeacc!40}\rule{\linewidth}{0.6pt}}\par\nobreak\smallskip}
+}
+\newtcolorbox{theorembox}[1]{
+  enhanced,colback=creambg!70!white,colframe=pureblack,
+  boxrule=1.1pt,arc=2mm,left=9pt,right=9pt,top=5pt,bottom=5pt,
+  before skip=7pt,after skip=7pt,
+  before upper={\textbf{\color{pureblack}\large #1}\par\nobreak
+    {\color{orangeacc}\rule{\linewidth}{0.8pt}}\par\nobreak\smallskip}
+}
+\newcommand{\term}[1]{\textbf{\color{orangeacc}#1}}
+\renewcommand{\familydefault}{\rmdefault}
+\tikzset{every node/.append style={font=\rmfamily}}
+
+\begin{document}
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\setlength{\abovedisplayshortskip}{4pt}
+\setlength{\belowdisplayshortskip}{4pt}
+\setlength{\jot}{2pt}
+\color{blackmain}
+\begin{center}
+{\LARGE\textbf{Mathematical Methods I}}\\[0.2cm]
+{\Large\textcolor{orangeacc}{\textbf{The metric and tensors}}}\\[0.4cm]
+{\large\textcolor{graymuted}{Gabriel Velázquez}}\\[0.25cm]
+\end{center}
+
+\manualsection{1. Tensors and their components}
+A tensor generalizes the notions of a scalar and a vector. In a coordinate system, its components are identified by indices; the total number of indices is its \term{rank}.
+\begin{infobox}[orangeacc]{Types of tensor}
+\begin{itemize}[topsep=2pt,itemsep=3pt]
+\item \textbf{Rank 0:} a scalar, such as mass or temperature at a point.
+\item \textbf{Rank 1:} a vector, such as velocity or force, or a covector, such as the differential of a function.
+\item \textbf{Rank 2 or higher:} a tensor whose components form a matrix or a higher dimensional array.
+\end{itemize}
+In dimension $d$, a rank $n$ tensor has $d^n$ components in a basis, although symmetries may reduce the number of independent components.
+\end{infobox}
+The defining feature of a tensor is its \term{transformation law}: its components change in a prescribed way when coordinates change, while the geometric object they represent remains the same.
+\begin{theorembox}{Geometric definition}
+At a point $p$, a tensor of type $(r,s)$ is a multilinear map
+\[
+T_p:\underbrace{T_p^*M\times\cdots\times T_p^*M}_{r\text{ covectors}}
+\times\underbrace{T_pM\times\cdots\times T_pM}_{s\text{ vectors}}
+\longrightarrow\mathbb R.
+\]
+Its components carry $r$ upper indices and $s$ lower indices. For example, $A^i$ is contravariant, $A_i$ is covariant, and $T^i{}_j$ is mixed.
+\end{theorembox}
+
+\newpage
+\manualsection{2. The metric: from vectors to covectors}
+Tangent vectors and covectors belong to different spaces. A \term{metric} $g$ assigns a real number to each pair of tangent vectors, bilinearly and symmetrically. Because it is nondegenerate, it associates each vector $v$ with the covector $v^\flat=g(v,\,\cdot\,)$; this operation is called \term{lowering an index}.
+\begin{infobox}[orangeacc]{Covariant metric tensor}
+In coordinates $x^1,\ldots,x^d$, let $e_i=\partial/\partial x^i$ be the tangent basis. The metric components are
+\[
+\boxed{g_{ij}=g(e_i,e_j)=\left\langle\frac{\partial}{\partial x^i},
+\frac{\partial}{\partial x^j}\right\rangle,\qquad g_{ij}=g_{ji}.}
+\]
+The matrix $(g_{ij})$ represents a symmetric tensor of type $(0,2)$. In the Euclidean or Riemannian case, $g(v,v)>0$ whenever $v\ne0$.
+\end{infobox}
+The components $v_i=g_{ij}v^j$ are those of $v^\flat$; here and below, repeated indices are summed. The \term{inverse metric} has components $g^{ij}$ and satisfies
+\[
+\boxed{g^{ik}g_{kj}=\delta^i{}_j,\qquad v^i=g^{ij}v_j.}
+\]
+Thus $g^{ij}$ is symmetric and of type $(2,0)$, and it raises an index. The Kronecker delta $\delta^i{}_j$ is the identity matrix.
+
+\manualsection{3. What $ds^2$ represents}
+The symbol $ds^2$ denotes the \term{line element}: the metric evaluated on an infinitesimal displacement. In Riemannian geometry, it is the square of the infinitesimal distance between nearby points. It is also called the \term{first fundamental form}.
+\begin{theorembox}{First fundamental form}
+\[
+\boxed{ds^2=g_{ij}\,dx^i\,dx^j.}
+\]
+The Einstein convention is used: repeated indices $i$ and $j$ are summed. The products $dx^i\,dx^j$ express the quadratic evaluation of the metric on a displacement; they are not exterior products $dx^i\wedge dx^j$.
+\end{theorembox}
+\manualsubsection{The metric in action}
+For tangent vectors $v=v^ie_i$ and $w=w^ie_i$, the inner product and Riemannian norm are
+\[
+\langle v,w\rangle=g_{ij}v^iw^j,
+\qquad \lVert v\rVert=\sqrt{g_{ij}v^iv^j}.
+\]
+For nonzero vectors, the angle $\phi$ is determined by
+\[
+\cos\phi=\frac{g_{ij}v^iw^j}{\sqrt{g_{ij}v^iv^j}\,\sqrt{g_{ij}w^iw^j}}.
+\]
+If $x^i(t)$ parametrizes a curve with a Riemannian metric, its length from $t=a$ to $t=b$ is obtained by integrating the speed measured by $g$:
+\[
+\boxed{L=\int_a^b\sqrt{g_{ij}(x(t))\frac{dx^i}{dt}\frac{dx^j}{dt}}\,dt.}
+\]
+In dimension $d$, the metric also determines the volume element $dV_g=\sqrt{\det(g_{ij})}\,dx^1\cdots dx^d$ in oriented Riemannian coordinates. It therefore enters the measurement of both curves and regions.
+
+\manualsection{4. From the tensor product to the wedge product}
+\begin{infobox}[orangeacc]{Tensor product and wedge product}
+For covectors $\alpha$, $\beta$, the tensor product is defined by
+\[
+\boxed{(\alpha\otimes\beta)(v,w)=\alpha(v)\beta(w).}
+\]
+It need not be symmetric or alternating. In contrast,
+\[
+\boxed{\alpha\wedge\beta=\alpha\otimes\beta-\beta\otimes\alpha.}
+\]
+Thus $dx^1\otimes dx^1$ is nonzero, although $dx^1\wedge dx^1=0$.
+\end{infobox}
+The identity shows what changes when the two vectors are exchanged. Evaluating the products on $v,w$ gives
+\begin{theorembox}{Evaluation and alternation}
+\[
+(\alpha\wedge\beta)(v,w)
+=\alpha(v)\beta(w)-\alpha(w)\beta(v).
+\]
+Thus $(\alpha\wedge\beta)(w,v)=-(\alpha\wedge\beta)(v,w)$ and $\alpha\wedge\alpha=0$. In contrast, $(dx^1\otimes dx^1)(v,v)=[dx^1(v)]^2$ can be nonzero.
+\end{theorembox}
+\begin{examplebox}{Example in the plane}
+If $\alpha=a\,dx+b\,dy$ and $\beta=c\,dx+d\,dy$, then
+\[
+\alpha\wedge\beta=(ad-bc)\,dx\wedge dy.
+\]
+In particular, for $u=(u^x,u^y)$ and $v=(v^x,v^y)$,
+\[
+(dx\wedge dy)(u,v)=u^xv^y-u^yv^x
+=\det\begin{pmatrix}u^x&v^x\\u^y&v^y\end{pmatrix}.
+\]
+The wedge product records oriented area; $dx\otimes dy$ alone gives $u^xv^y$ and does not necessarily change sign when the vectors are exchanged.
+\end{examplebox}
+\manualsection{5. Example: the metric in polar coordinates}
+In the Euclidean plane, let $u^1=r$, $u^2=\theta$, and
+\[
+x=r\cos\theta,\qquad y=r\sin\theta,\qquad r>0.
+\]
+To construct the metric, differentiate each Cartesian coordinate with respect to $r$ and $\theta$:
+\begin{align*}
+\frac{\partial x}{\partial r}&=\cos\theta,
+&\frac{\partial y}{\partial r}&=\sin\theta,\\
+\frac{\partial x}{\partial\theta}&=-r\sin\theta,
+&\frac{\partial y}{\partial\theta}&=r\cos\theta.
+\end{align*}
+The associated tangent vectors are therefore
+\[
+e_r=(\cos\theta,\sin\theta),\qquad
+e_\theta=(-r\sin\theta,r\cos\theta).
+\]
+The Cartesian metric on the plane is Euclidean. Hence,
+\[
+g_{ab}=e_a\cdot e_b
+=\sum_{k=1}^{2}\frac{\partial x^k}{\partial u^a}
+                  \frac{\partial x^k}{\partial u^b},
+\qquad (x^1,x^2)=(x,y),\ (u^1,u^2)=(r,\theta).
+\]
+Compute its three independent components separately:
+\begin{align*}
+g_{rr}&=\left(\frac{\partial x}{\partial r}\right)^2
+       +\left(\frac{\partial y}{\partial r}\right)^2
+       =\cos^2\theta+\sin^2\theta=1,\\
+g_{\theta\theta}&=\left(\frac{\partial x}{\partial\theta}\right)^2
+       +\left(\frac{\partial y}{\partial\theta}\right)^2
+       =r^2\sin^2\theta+r^2\cos^2\theta=r^2,\\
+g_{r\theta}=g_{\theta r}&=
+       \frac{\partial x}{\partial r}\frac{\partial x}{\partial\theta}
+       +\frac{\partial y}{\partial r}\frac{\partial y}{\partial\theta}
+       =-r\sin\theta\cos\theta+r\sin\theta\cos\theta=0.
+\end{align*}
+\begin{theorembox}{Metric matrix and line element in polar coordinates}
+\[
+\boxed{(g_{ab})=\begin{pmatrix}1&0\\0&r^2\end{pmatrix},
+\qquad ds^2=dr^2+r^2d\theta^2.}
+\]
+The angular coordinate is converted to length by the scale factor $r$: at fixed radius, a change $d\theta$ corresponds to a distance $r\,d\theta$.
+\end{theorembox}
+\manualsection{6. Detailed calculation of a circle's circumference}
+We seek the circumference of a circle of fixed radius $R>0$ using the polar metric $ds^2=dr^2+r^2d\theta^2$.
+\begin{examplebox}{Step 1. Parametrize the curve}
+Set $t=\theta$ and make one complete revolution for $0\leq t\leq2\pi$:
+\[
+u^1(t)=r(t)=R,\qquad u^2(t)=\theta(t)=t.
+\]
+The tangent vector therefore has components
+\[
+\frac{dr}{dt}=0,\qquad\frac{d\theta}{dt}=1.
+\]
+The first equation says that the curve has no radial motion; the second says that the angle increases by one unit per unit of $t$.
+\end{examplebox}
+\begin{examplebox}{Step 2. Evaluate the metric on the tangent}
+In polar coordinates, $g_{rr}=1$, $g_{r\theta}=g_{\theta r}=0$, and $g_{\theta\theta}=r^2$. Expanding the Einstein sum gives
+\begin{align*}
+g_{ab}\frac{du^a}{dt}\frac{du^b}{dt}
+&=g_{rr}\left(\frac{dr}{dt}\right)^2
+  +2g_{r\theta}\frac{dr}{dt}\frac{d\theta}{dt}
+  +g_{\theta\theta}\left(\frac{d\theta}{dt}\right)^2\\
+&=(1)(0)^2+2(0)(0)(1)+(R^2)(1)^2=R^2.
+\end{align*}
+The speed measured by the metric is $\sqrt{R^2}=R$ because the radius is positive.
+\end{examplebox}
+\begin{examplebox}{Step 3. Integrate the length}
+Substitute into the length formula, with limits $0$ and $2\pi$:
+\[
+\boxed{L=\int_0^{2\pi}\sqrt{g_{ab}\dot u^a\dot u^b}\,dt
+=\int_0^{2\pi}R\,dt
+=R[t]_{0}^{2\pi}=2\pi R.}
+\]
+This recovers the usual circumference from the line element in curvilinear coordinates.
+\end{examplebox}
+
+\newpage
+\manualsection{7. Transformation and invariance}
+The line element is the same geometric object in any coordinate system. Under a change from $x^i$ to coordinates $x'^a$, the differentials satisfy
+\[
+dx^i=\frac{\partial x^i}{\partial x'^a}\,dx'^a.
+\]
+Substituting them into $ds^2=g_{ij}dx^i dx^j$ gives the covariant transformation law:
+\begin{theorembox}{Transformation law of the metric}
+\[
+\boxed{g'_{ab}=\frac{\partial x^i}{\partial x'^a}
+\frac{\partial x^j}{\partial x'^b}\,g_{ij}.}
+\]
+Although the component matrix changes, $g'_{ab}dx'^a dx'^b=g_{ij}dx^i dx^j$.
+\end{theorembox}
+\begin{examplebox}{From Cartesian to polar coordinates}
+In the plane, the Cartesian metric matrix is the identity. If $J=\partial(x,y)/\partial(r,\theta)$, then
+\[
+J=\begin{pmatrix}\cos\theta&-r\sin\theta\\
+\sin\theta&r\cos\theta\end{pmatrix},\qquad
+g_{\mathrm{polar}}=J^{\mathsf T}J
+=\begin{pmatrix}1&0\\0&r^2\end{pmatrix}.
+\]
+This matrix multiplication reproduces the calculation of the products $e_a\cdot e_b$.
+\end{examplebox}
+
+\manualsection{8. Pythagoras in curvilinear coordinates}
+In orthogonal coordinates $q^i$, the metric matrix is diagonal. For a Riemannian metric, define the \term{scale factor} $h_i=\sqrt{g_{ii}}$, with no sum over $i$. In three dimensions,
+\begin{infobox}[orangeacc]{Orthogonal line element}
+\[
+\boxed{ds^2=(h_1\,dq^1)^2+(h_2\,dq^2)^2+(h_3\,dq^3)^2.}
+\]
+This is the Pythagorean theorem expressed through infinitesimal coordinate changes. In the polar plane, $h_r=1$ and $h_\theta=r$.
+\end{infobox}
+
+\newpage
+\manualsection{9. The semi-Riemannian metric}
+In Riemannian geometry, the metric is \term{positive definite}: $g(v,v)>0$ for every nonzero vector. This lets us interpret $ds^2$ as the square of an infinitesimal length. In \term{semi-Riemannian} geometry, the metric remains symmetric and nondegenerate but can have both positive and negative signs. Consequently, $g(v,v)$ may be positive, negative, or zero even when $v\ne0$.
+
+The central physical example is a \term{Lorentzian} metric, with one time direction and three spatial directions. In flat Minkowski spacetime, using inertial coordinates and the sign convention $(-,+,+,+)$, the metric matrix is
+\[
+(g_{\mu\nu})=\operatorname{diag}(-c^2,1,1,1)
+\quad\text{for coordinates }(t,x,y,z).
+\]
+\begin{theorembox}{Interval in Minkowski spacetime}
+With the sign convention $(-,+,+,+)$ and inertial coordinates $(t,x,y,z)$,
+\[
+\boxed{ds^2=-c^2dt^2+dx^2+dy^2+dz^2.}
+\]
+Here $c$ is the speed of light. The value of the interval is preserved under coordinate changes.
+\end{theorembox}
+
+\end{document}
