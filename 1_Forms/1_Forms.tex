@@ -35,13 +35,14 @@
 \setlist[enumerate]{label={\textcolor{orangeacc}{\arabic*.}},leftmargin=1.8em}
 % ============ TITLES ============
 \newcommand{\manualsection}[1]{%
-  \Needspace{16\baselineskip}%
+  \Needspace{10\baselineskip}%
   \vspace{0.35cm}
   \par\noindent{\Large\bfseries\color{blackmain} #1}\par\nobreak
   \noindent{\color{orangeacc}\rule{\linewidth}{1.4pt}}\par\nobreak
   \vspace{0.15cm}
 }
 \newcommand{\manualsubsection}[1]{%
+  \Needspace{5\baselineskip}%
   \par\vspace{0.2cm}\noindent{\bfseries\color{orangeacc} #1}\par\nobreak
   \vspace{0.12cm}
 }
@@ -92,6 +93,8 @@
 {\Large\textcolor{orangeacc}{\textbf{Differential 1-forms}}}\\[0.4cm]
 {\large\textcolor{graymuted}{Gabriel Velázquez}}\\[0.25cm]
 \end{center}
+
+% =====================================================================
 \manualsection{1. Covectors and 1-forms}
 A tangent vector describes a direction and a magnitude at a point. A 1-form evaluates that vector and produces a real number in a linear way.
 \begin{infobox}[orangeacc]{Definition 1.1 (Covector and covector field)}
@@ -101,13 +104,13 @@ Let $\Omega\subseteq\mathbb{R}^n$ be open. A \term{covector} at $p\in\Omega$ is 
 \]
 The set of these functionals is the \term{cotangent space}
 $T_p^*\Omega=(T_p\Omega)^*$, the dual of the tangent space.
-A \term{differential 1-form} $\omega$ assigns a covector $\omega_p$ to each point $p$, with smooth coefficient functions in the case of a smooth form.
+A \term{differential 1-form} $\omega$ assigns a covector $\omega_p$ to each point $p$; it is smooth when its coefficient functions (Section~3) are smooth.
 \end{infobox}
 Linearity refers to vectors based at the same point: for $u_p,v_p\in T_p\Omega$ and $a,b\in\mathbb{R}$,
 \[
 \omega_p(au_p+bv_p)=a\omega_p(u_p)+b\omega_p(v_p).
 \]
-\begin{theorembox}{Operations with 1-forms}
+\begin{theorembox}{Proposition 1.2 (Operations with 1-forms)}
 For 1-forms $\phi,\psi$ and a scalar function $f$, define
 \begin{align*}
 (\phi+\psi)_p(v_p)&=\phi_p(v_p)+\psi_p(v_p),\\
@@ -121,14 +124,15 @@ If $X$ is a vector field, $\omega(X)$ is the scalar function
 \bigl(\omega(X)\bigr)(p)=\omega_p(X(p)).
 \]
 In particular, $\omega_p(v_p)$ is a number, whereas $\omega(X)$ is a function of $p$.
-\begin{theorembox}{Linearity over functions}
+\begin{theorembox}{Proposition 1.3 (Linearity over functions)}
 For vector fields $X,Y$ and scalar functions $f,g$,
 \[
 \omega(fX+gY)=f\,\omega(X)+g\,\omega(Y).
 \]
 Thus, a 1-form transforms vector fields into functions by pointwise evaluation.
 \end{theorembox}
-\newpage
+
+% =====================================================================
 \manualsection{2. Coordinate differentials and the dual basis}
 Let $x^1,\ldots,x^n$ be the Cartesian coordinate functions. We write
 \[
@@ -159,7 +163,7 @@ At each point, $\{(dx^1)_p,\ldots,(dx^n)_p\}$ is the dual basis of $\{\partial_1
 \]
 As an identity between functions, we write $dx^i(U_j)=\delta^i_j$.
 \end{theorembox}
-In Cartesian coordinates, the value $dx^i(v_p)=v^i$ does not explicitly depend on $p$ when the vector components are fixed.
+Note that $dx^i(v_p)=v^i$ reads off a component of the vector: the output depends only on $v_p$, not on a choice of metric.
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[>=Stealth,scale=.9]
@@ -174,9 +178,11 @@ In Cartesian coordinates, the value $dx^i(v_p)=v^i$ does not explicitly depend o
 \fill (P) circle (2pt) node[below left] {$p$};
 \end{tikzpicture}
 \caption{The forms $dx$ and $dy$ return the components of the vector based at $p$. The horizontal and vertical arrows represent vector components, not the 1-forms themselves.}
+\label{fig:components}
 \end{figure}
 \FloatBarrier
-\newpage
+
+% =====================================================================
 \manualsection{3. Expression and evaluation of a 1-form}
 \begin{theorembox}{Proposition 3.1 (Coordinate expression)}
 Every 1-form can be uniquely expressed as
@@ -188,7 +194,7 @@ where the $a_i$ are scalar functions. Its coefficients are recovered by evaluati
 a_i=\omega(U_i).
 \]
 \end{theorembox}
-\manualsubsection{Proof and evaluation formula}
+\manualsubsection{Proof}
 At a point $p$, let $v_p=\sum_jv^j\partial_j|_p$. By linearity and duality,
 \begin{align*}
 \omega_p(v_p)
@@ -203,14 +209,14 @@ In particular,
 \omega(U_j)=\sum_i a_i\,dx^i(U_j)=\sum_i a_i\delta^i_j=a_j.
 \]
 Conversely, defining $a_i=\omega(U_i)$, the form $\sum_i a_i dx^i$ agrees with $\omega$ on every basis vector and, by linearity, on every vector. This proves the existence and uniqueness of the expression.
-\begin{infobox}[orangeacc]{Evaluation on a vector field}
+\begin{theorembox}{Proposition 3.2 (Evaluation formula)}
 If $X=\sum_i X^i\partial_i$, then
 \[
 \boxed{\omega(X)=\sum_i a_iX^i.}
 \]
 Both sides are functions; evaluation at $p$ gives $\omega_p(X(p))$.
-\end{infobox}
-\begin{examplebox}{Example 3.2 (A function and its value at a point)}
+\end{theorembox}
+\begin{examplebox}{Example 3.3 (A function and its value at a point)}
 In $\mathbb{R}^2$, let $\omega=y\,dx+2x\,dy$ and $X=x\partial_x-\partial_y$. Then
 \[
 \omega(X)=xy-2x.
@@ -218,9 +224,69 @@ In $\mathbb{R}^2$, let $\omega=y\,dx+2x\,dy$ and $X=x\partial_x-\partial_y$. The
 For $p=(1,3)$, $\omega_p=3(dx)_p+2(dy)_p$ and $X(p)=(1,-1)_p$, so $\omega_p(X(p))=3-2=1$.
 Moreover, $\omega(\partial_x)=y$ and $\omega(\partial_y)=2x$ recover the coefficients.
 \end{examplebox}
-\newpage
-\manualsection{4. The differential $df$ and exact forms}
-\begin{theorembox}{Theorem 4.1 (Coordinate expression of the differential)}
+
+% =====================================================================
+\manualsection{4. Geometric picture: a covector is a stack of lines}
+A vector is an arrow. A covector has an equally concrete picture, but it is not an arrow: it is a family of equally spaced parallel lines (planes, in $\mathbb{R}^3$).
+
+\begin{infobox}[orangeacc]{Picture 4.1 (Covector as a stack)}
+Given a nonzero covector $\omega_p$, draw the lines
+\[
+\omega_p(v)=k,\qquad k\in\mathbb{Z},
+\]
+in the tangent space. The line $k=0$ is the kernel: the vectors that $\omega_p$ sends to zero. Then
+\[
+\omega_p(v_p)=\text{number of lines crossed by the arrow }v_p
+\]
+(counted with sign, and fractionally if the arrow stops between two lines). Doubling $v_p$ doubles the count and adding arrows adds the counts; this is exactly linearity. The more tightly packed the lines, the larger $\omega_p$.
+\end{infobox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.5]
+  \begin{scope}
+    \clip (-0.45,-0.45) rectangle (2.7,2.7);
+    \foreach \k in {0,...,7} {
+      \draw[graymuted] (-1,{\k+2})--(3,{\k-6});
+    }
+  \end{scope}
+  \draw[->,graymuted!70] (-0.45,0)--(2.8,0) node[right] {$x$};
+  \draw[->,graymuted!70] (0,-0.45)--(0,2.8) node[above] {$y$};
+  \foreach \k in {0,1,2} {
+    \node[graymuted,left,font=\scriptsize] at (0,\k) {$\k$};
+  }
+  \foreach \k in {3,...,7} {
+    \node[graymuted,above,font=\scriptsize] at ({(\k-2.6)/2},2.6) {$\k$};
+  }
+  \draw[->,orangeacc,very thick] (0,0)--(1,1.5) node[midway,right=2pt] {$v_p$};
+  \fill[blackmain] (0,0) circle (1.6pt);
+  \fill[orangeacc] (1,1.5) circle (1.6pt);
+  \draw[->,blackmain,very thick] (0,0)--(-0.75,1.5) node[midway,left=2pt] {$w_p$};
+  \node[orangeacc,anchor=west,align=left] at (3.0,1.9)
+    {\small $\omega_p(v_p)=3.5$\\[-1pt]\small crosses $3$ lines\\[-1pt]\small and half of the next};
+  \node[blackmain,anchor=west,align=left] at (3.0,0.8)
+    {\small $\omega_p(w_p)=0$\\[-1pt]\small runs along the\\[-1pt]\small line $k=0$};
+\end{tikzpicture}
+\caption{The covector $\omega_p=2\,dx+dy$ drawn as the lines $2x+y=k$. The arrow $v_p=(1,1.5)$ crosses lines $1,2,3$ and stops halfway to $4$, so $\omega_p(v_p)=3.5$. The arrow $w_p=(-0.5,1)$ lies on the kernel and crosses nothing. (The picture lives in the tangent space at $p$; the origin stands for $p$.)}
+\label{fig:stack}
+\end{figure}
+\FloatBarrier
+
+\begin{examplebox}{Example 4.2 (Reading the picture)}
+For $\omega_p=2\,dx+dy$ and $v_p=(1,1.5)$, the formula of Proposition~3.2 gives $2(1)+1(1.5)=3.5$, matching the count in Figure~\ref{fig:stack}. For $w_p=(-0.5,1)$ we get $2(-0.5)+1=0$. Linearity is visible too: $\omega_p(v_p+w_p)=3.5+0$, and $v_p+w_p=(0.5,2.5)$ gives $1+2.5=3.5$.
+\end{examplebox}
+
+\manualsubsection{The differential $df$ and level lines}
+For $df_p$ the lines are the level lines of $f$ near $p$, drawn at unit steps of $f$. Then $(df)_p(v_p)$ is the number of level lines crossed by $v_p$, that is, the (first-order) change of $f$ when we move along $v_p$. A vector tangent to the level set of $f$ crosses no lines and gives $0$.
+
+The \emph{gradient} is the arrow perpendicular to the lines, pointing toward increasing $k$, whose length is the density of the lines. Notice that ``perpendicular'' and ``length'' need a metric, whereas the stack of lines does not. This is why $df$ is the more basic object (see the last box of Section~9).
+
+\manualsubsection{Looking ahead: integration}
+This picture is what makes 1-forms natural objects to integrate. Along a curve $\gamma$, the integral $\int_\gamma\omega$ adds up the lines crossed by the velocity of $\gamma$ at each instant. If $\omega=df$, the total count is just the net number of level lines crossed, $f(\text{end})-f(\text{start})$, which is zero on a closed loop.
+
+% =====================================================================
+\manualsection{5. The differential $df$ and exact forms}
+\begin{theorembox}{Theorem 5.1 (Coordinate expression of the differential)}
 For a differentiable function $f:\Omega\to\mathbb{R}$,
 \[
 \boxed{df=\sum_{i=1}^n\frac{\partial f}{\partial x^i}\,dx^i.}
@@ -242,7 +308,7 @@ The two forms agree on all tangent vectors and are therefore equal. Equivalently
 \[
 df(U_i)=U_i[f]=\frac{\partial f}{\partial x^i}.
 \]
-\begin{examplebox}{Example 4.2 (Computing $df$)}
+\begin{examplebox}{Example 5.2 (Computing $df$)}
 If $f(x,y,z)=x^2y+z^2$, then
 \[
 df=2xy\,dx+x^2\,dy+2z\,dz.
@@ -254,16 +320,17 @@ For $p=(1,2,-1)$ and $v_p=(2,-1,3)_p$,
 This gives the directional derivative of $f$ along the vector $v_p$.
 \end{examplebox}
 \manualsubsection{Differential, vector field, and curve}
-For any vector field $X$, $df(X)=X[f]$. If $\alpha$ is a differentiable curve contained in $\Omega$, the chain rule states that
+For any vector field $X$, $df(X)=X[f]$. If $\gamma$ is a differentiable curve contained in $\Omega$, the chain rule states that
 \[
-(df)_{\alpha(t)}\bigl(\alpha'(t)\bigr)
-=\frac{d}{dt}\bigl(f(\alpha(t))\bigr).
+(df)_{\gamma(t)}\bigl(\gamma'(t)\bigr)
+=\frac{d}{dt}\bigl(f(\gamma(t))\bigr).
 \]
 Evaluating $df$ on the velocity measures how $f$ changes along the curve.
-\newpage
-\manualsection{5. The operator $d$: products and compositions}
+
+% =====================================================================
+\manualsection{6. The operator $d$: products and compositions}
 The operator $d$ transforms a scalar function $f$ into the 1-form $df$. The usual differentiation rules thus become equalities between 1-forms. We assume that the functions are differentiable on their domains.
-\begin{theorembox}{Proposition 5.1 (Linearity and the product rule)}
+\begin{theorembox}{Proposition 6.1 (Linearity and the product rule)}
 For $f,g:\Omega\to\mathbb{R}$ and constants $a,b\in\mathbb{R}$,
 \[
 d(af+bg)=a\,df+b\,dg,\qquad d(c)=0\quad(c\text{ constant}).
@@ -286,7 +353,7 @@ For any tangent vector $v_p$, we apply the definition of the differential and th
 &=f(p)(dg)_p(v_p)+g(p)(df)_p(v_p).
 \end{align*}
 Since both 1-forms give the same result on every $v_p$, they are equal. Linearity is justified in the same way.
-\begin{examplebox}{Example 5.2 (Product of two functions)}
+\begin{examplebox}{Example 6.2 (Product of two functions)}
 Let $f(x,y)=x^2$ and $g(x,y)=y$. First, we compute
 \[
 df=2x\,dx,\qquad dg=dy.
@@ -296,15 +363,14 @@ Then we apply the rule:
 d(x^2y)&=x^2\,d(y)+y\,d(x^2)\\
 &=x^2\,dy+2xy\,dx.
 \end{align*}
-This gives the term corresponding to $x^2y$ in Example 4.2. Since $d(z^2)=2z\,dz$, linearity gives
+This gives the term corresponding to $x^2y$ in Example~5.2. Since $d(z^2)=2z\,dz$, linearity gives
 \[
 d(x^2y+z^2)=2xy\,dx+x^2\,dy+2z\,dz.
 \]
 \end{examplebox}
-In $f\,dg$, the function multiplies the form: $(f\,dg)_p(v_p)=f(p)(dg)_p(v_p)$. Two differentials are not multiplied together; $d(fg)$ is a 1-form.
-\newpage
-\manualsection{5. The operator $d$ (continued)}
-\begin{theorembox}{Proposition 5.3 (Chain rule)}
+In $f\,dg$, the function multiplies the form: $(f\,dg)_p(v_p)=f(p)(dg)_p(v_p)$. Two differentials are not multiplied together here; $d(fg)$ is a 1-form.
+
+\begin{theorembox}{Proposition 6.3 (Chain rule)}
 Let $f:\Omega\to\mathbb{R}$ and $h:A\to\mathbb{R}$, where $A\subseteq\mathbb{R}$ is open and $f(\Omega)\subseteq A$. Then
 \[
 \boxed{d(h\circ f)=(h'\circ f)\,df=h'(f)\,df.}
@@ -320,7 +386,7 @@ For every tangent vector $v_p$, the ordinary chain rule gives
 =h'(f(p))\,(df)_p(v_p).
 \]
 This proves the equality of the 1-forms.
-\begin{examplebox}{Example 5.4 (A composition step by step)}
+\begin{examplebox}{Example 6.4 (A composition step by step)}
 For $F(x,y)=\sin(x^2y)$, the inner function is $f(x,y)=x^2y$ and the outer function is $h(u)=\sin u$. We have
 \[
 h'(u)=\cos u,\qquad df=2xy\,dx+x^2\,dy.
@@ -353,10 +419,11 @@ d\!\left(\frac{f}{g}\right)=\frac{1}{g}\,df-\frac{f}{g^2}\,dg
 =\frac{g\,df-f\,dg}{g^2}.
 \]
 \end{infobox}
-\newpage
-\manualsection{6. Indices and coordinate changes}
-The components of a vector and a 1-form change with the coordinates, although the geometric object and its evaluation remain the same.
-\begin{infobox}[orangeacc]{Einstein summation convention}
+
+% =====================================================================
+\manualsection{7. Indices and coordinate changes}
+The components of a vector and a 1-form change with the coordinates, although the geometric object and its evaluation remain the same. From here on we write $\omega_i$ for the coefficients $a_i$ of Section~3.
+\begin{infobox}[orangeacc]{Convention 7.1 (Einstein summation)}
 An index repeated once as a superscript and once as a subscript indicates summation:
 \[
 X=X^i\partial_i,\qquad \omega=\omega_i\,dx^i,
@@ -365,28 +432,29 @@ X=X^i\partial_i,\qquad \omega=\omega_i\,dx^i,
 The repeated index is a \term{dummy index}: it may be renamed without changing the expression. Free indices must match on both sides of an equality.
 \end{infobox}
 The vector components $X^i$ are \term{contravariant}; the components $\omega_i$ of a 1-form are \term{covariant}. The tangent basis $\partial_i$ and the cotangent basis $dx^i$ transform so as to compensate for the change in their respective components.
+
 \manualsubsection{A fixed vector, different coordinate descriptions}
 Think of a tangent vector as a fixed arrow at a point $p$, for example the velocity of a particle at one instant. The arrow is the geometric object; its components depend on the coordinates used to describe it.
-Let $\alpha(t)$ be a curve with $\alpha(0)=p$ and $v_p=\alpha'(0)$. In coordinates $x$ and $u$, the same motion has components
-\[
-v_x^i=\left.\frac{d(x^i\circ\alpha)}{dt}\right|_{t=0},
-\qquad
-v_u^a=\left.\frac{d(u^a\circ\alpha)}{dt}\right|_{t=0}.
-\]
-Applying the chain rule to $u^a=u^a(x)$ gives
-\[
-\boxed{v_u^a=\frac{\partial u^a}{\partial x^i}(p)\,v_x^i.}
-\]
-Thus, the transformation law for vector components is simply the chain rule for the velocity of the same curve. With the convention $J=\partial x/\partial u$ used below, this is $\boldsymbol v_u=J(p)^{-1}\boldsymbol v_x$. The Jacobian converts the components of a tangent vector locally at $p$.
-\newpage
-\manualsection{6. Indices and coordinate changes (continued)}
-\manualsubsection{General rules without matrix ambiguity}
+
 Let $x=(x^1,\ldots,x^n)$ and $u=(u^1,\ldots,u^n)$ be two local coordinate systems, with invertible change of coordinates $x=x(u)$. Set
 \[
 J^i{}_a=\frac{\partial x^i}{\partial u^a},
 \qquad (J^{-1})^a{}_i=\frac{\partial u^a}{\partial x^i}.
 \]
-\begin{theorembox}{Transformation of bases and components}
+Let $\gamma(t)$ be a curve with $\gamma(0)=p$ and $v_p=\gamma'(0)$. In coordinates $x$ and $u$, the same motion has components
+\[
+v_x^i=\left.\frac{d(x^i\circ\gamma)}{dt}\right|_{t=0},
+\qquad
+v_u^a=\left.\frac{d(u^a\circ\gamma)}{dt}\right|_{t=0}.
+\]
+Applying the chain rule to $u^a=u^a(x)$ gives
+\[
+\boxed{v_u^a=\frac{\partial u^a}{\partial x^i}(p)\,v_x^i,}
+\qquad\text{that is,}\qquad \boldsymbol v_u=J(p)^{-1}\boldsymbol v_x .
+\]
+The transformation law for vector components is simply the chain rule for the velocity of the same curve; the Jacobian converts components locally at $p$.
+
+\begin{theorembox}{Proposition 7.2 (Transformation of bases and components)}
 By the chain rule,
 \begin{align*}
 \partial_{u^a}&=\frac{\partial x^i}{\partial u^a}\partial_{x^i},
@@ -412,32 +480,11 @@ Contracting a covariant index with a contravariant one gives
 =\omega_{x,i}X_x^i.
 \]
 An index repeated twice as a superscript or twice as a subscript does not represent a contraction under this convention. For example, the inner product is written $g_{ij}A^iB^j$; in an orthonormal Cartesian basis it can be simplified to $\sum_i A^iB^i$, because there $g_{ij}=\delta_{ij}$.
-\newpage
-\manualsection{6. Connection with classical mechanics}
-\manualsubsection{Generalized coordinates and generalized velocities}
-In classical mechanics, a configuration is a point of configuration space. Generalized coordinates $q^1,\ldots,q^m$ are local coordinates on that space; they may be lengths, angles, or other independent parameters. A motion is a curve $q(t)$, and its tangent vector is
-\[
-\dot\alpha(t)=\dot q^a(t)\,\partial_{q^a}\big|_{\alpha(t)},
-\qquad dq^a(\dot\alpha)=\dot q^a.
-\]
-The numbers $\dot q^a$ are the \term{generalized velocities}. They are coordinate components, so they need not be speeds measured along unit vectors. For example, $\dot\theta$ is an angular velocity, whereas $r\dot\theta$ is a tangential speed.
-For a particle with a time-independent position map $\mathbf r=\mathbf r(q)$, the physical velocity is
-\[
-\boxed{\mathbf v=\frac{d\mathbf r}{dt}
-=\frac{\partial\mathbf r}{\partial q^a}\,\dot q^a.}
-\]
-For an unconstrained particle with $m=n$ and an invertible coordinate map, this is precisely $\boldsymbol v_x=J\dot{\boldsymbol q}$, with $J=\partial x/\partial q$, or $\dot{\boldsymbol q}=J^{-1}\boldsymbol v_x$. With constraints, $m$ may be smaller than the number of ambient Cartesian coordinates: the chain rule still holds, but the position Jacobian is then rectangular and has no ordinary inverse. For explicitly time-dependent maps $\mathbf r(q,t)$, the velocity also includes $\partial\mathbf r/\partial t$.
-\manualsubsection{Forces as 1-forms: virtual work and power}
-For a force $\mathbf F$ on a particle, the Euclidean inner product defines a work 1-form on configuration space:
-\[
-\eta=\mathbf F\cdot d\mathbf r=Q_a\,dq^a,
-\qquad
-\boxed{Q_a=\mathbf F\cdot\frac{\partial\mathbf r}{\partial q^a}.}
-\]
-\newpage
-\manualsection{7. Example: polar coordinates}
+
+% =====================================================================
+\manualsection{8. Example: polar coordinates}
 Consider $x=r\cos\theta$, $y=r\sin\theta$, with $r>0$ and a smooth local choice of the angle. The origin lies outside this chart.
-\begin{theorembox}{Jacobian and inverse matrix}
+\begin{theorembox}{Proposition 8.1 (Jacobian and inverse matrix)}
 With $J=\partial(x,y)/\partial(r,\theta)$,
 \[
 J=\begin{pmatrix}
@@ -473,6 +520,7 @@ V^\theta&=-\frac{\sin\theta}{r}V^x+\frac{\cos\theta}{r}V^y.
 \node[anchor=west,align=left] at (5,.95) {$\|\partial_r\|=1$\\[5pt]$\|\partial_\theta\|=r$};
 \end{tikzpicture}
 \caption{Polar coordinate basis, illustrated at $r=2$. The vector $\partial_\theta$ is tangent to the circle and has length $r$; it is not generally a unit vector.}
+\label{fig:polar}
 \end{figure}
 \FloatBarrier
 \manualsubsection{Cotangent basis and 1-form components}
@@ -487,9 +535,10 @@ These formulas verify that $dr(\partial_r)=d\theta(\partial_\theta)=1$ and $dr(\
 \begin{pmatrix}dr\\d\theta\end{pmatrix}
 =J^{-1}\begin{pmatrix}dx\\dy\end{pmatrix}.
 \]
-\newpage
-\manualsection{8. Verification in both coordinate systems}
-\begin{examplebox}{Example 8.1 (A 1-form and a vector)}
+
+% =====================================================================
+\manualsection{9. Verification in both coordinate systems}
+\begin{examplebox}{Example 9.1 (A 1-form and a vector)}
 Consider
 \[
 \omega=x\,dx+y\,dy,
@@ -529,4 +578,81 @@ The differential $df$ is a covector. In Euclidean space, the inner product relat
 \]
 This identification uses the metric; the definition of $df$ as a linear functional does not require it.
 \end{infobox}
+
+% =====================================================================
+\manualsection{10. Connection with classical mechanics}
+\manualsubsection{Generalized coordinates and generalized velocities}
+In classical mechanics, a configuration is a point of configuration space. Generalized coordinates $q^1,\ldots,q^m$ are local coordinates on that space; they may be lengths, angles, or other independent parameters. A motion is a curve $q(t)$, and its tangent vector is
+\[
+\dot\gamma(t)=\dot q^a(t)\,\partial_{q^a}\big|_{\gamma(t)},
+\qquad dq^a(\dot\gamma)=\dot q^a.
+\]
+The numbers $\dot q^a$ are the \term{generalized velocities}. They are coordinate components, so they need not be speeds measured along unit vectors. For example, $\dot\theta$ is an angular velocity, whereas $r\dot\theta$ is a tangential speed.
+
+For a particle with a time-independent position map $\mathbf r=\mathbf r(q)$, the physical velocity is
+\[
+\boxed{\mathbf v=\frac{d\mathbf r}{dt}
+=\frac{\partial\mathbf r}{\partial q^a}\,\dot q^a.}
+\]
+For an unconstrained particle with $m=n$ and an invertible coordinate map, this is precisely $\boldsymbol v_x=J\dot{\boldsymbol q}$, with $J=\partial x/\partial q$, or $\dot{\boldsymbol q}=J^{-1}\boldsymbol v_x$ (Section~7). With constraints, $m$ may be smaller than the number of ambient Cartesian coordinates: the chain rule still holds, but the position Jacobian is then rectangular and has no ordinary inverse. For explicitly time-dependent maps $\mathbf r(q,t)$, the velocity also includes $\partial\mathbf r/\partial t$.
+
+\manualsubsection{Forces as 1-forms: virtual work and power}
+For a force $\mathbf F$ on a particle, the Euclidean inner product defines a work 1-form on configuration space:
+\[
+\eta=\mathbf F\cdot d\mathbf r=Q_a\,dq^a,
+\qquad
+\boxed{Q_a=\mathbf F\cdot\frac{\partial\mathbf r}{\partial q^a}.}
+\]
+The numbers $Q_a$ are the \term{generalized forces}. Evaluating $\eta$ on a displacement $\delta q$ gives the \term{virtual work} $\delta W=Q_a\,\delta q^a$, and evaluating it on the velocity gives the \term{power},
+\[
+\eta(\dot\gamma)=Q_a\dot q^a=\mathbf F\cdot\mathbf v .
+\]
+The last equality follows from the boxed velocity formula. Since the $Q_a$ multiply the differentials $dq^a$, they are \emph{covariant} components and transform as in Proposition~7.2: $Q_{u,a}=\frac{\partial q^b}{\partial u^a}Q_{q,b}$. The generalized velocities, in contrast, are contravariant.
+
+\begin{examplebox}{Example 10.2 (Generalized forces in polar coordinates)}
+Let $\mathbf F=F_r\,\mathbf e_r+F_\theta\,\mathbf e_\theta$, where $\mathbf e_r=\partial_r$ and $\mathbf e_\theta=\partial_\theta/r$ are the unit vectors of Section~8. With $\mathbf r=(r\cos\theta,r\sin\theta)$,
+\[
+Q_r=\mathbf F\cdot\partial_r=F_r,
+\qquad
+Q_\theta=\mathbf F\cdot\partial_\theta=r\,F_\theta,
+\qquad
+\eta=F_r\,dr+r\,F_\theta\,d\theta .
+\]
+$Q_\theta$ is a torque (force times lever arm), not a force: the generalized forces take the units that make $Q_a\,dq^a$ a work. This agrees with the rule $\omega_\theta=r(\cdots)$ of Section~8.
+\end{examplebox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.0]
+  \draw[thick,graymuted] (-0.6,0)--(0.6,0);
+  \fill[blackmain] (0,0) circle (2pt);
+  \draw[graymuted!65,dashed,domain=-140:-40,samples=50] plot ({2.2*cos(\x)},{2.2*sin(\x)});
+  \draw[graymuted,dashed] (0,0)--(0,-2.7);
+  \coordinate (B) at ({2.2*sin(35)},{-2.2*cos(35)});
+  \draw[blackmain,thick] (0,0)--(B) node[midway,above right] {$\ell$};
+  \fill[blackmain] (B) circle (3.5pt);
+  \draw[orangeacc] (0,-0.9) arc (-90:-55:0.9) node[midway,below] {$\varphi$};
+  \draw[->,blackmain,very thick] (B)--++({1.3*cos(35)},{1.3*sin(35)})
+    node[above right] {$\partial\mathbf r/\partial\varphi$};
+  \draw[->,orangeacc,very thick] (B)--++(0,-1.1) node[below] {$\mathbf F=m\mathbf g$};
+\end{tikzpicture}
+\caption{A pendulum has one generalized coordinate $\varphi$ in a two-dimensional space. The vector $\partial\mathbf r/\partial\varphi$ (length $\ell$, drawn shorter) is tangent to the circle of motion; only the component of $\mathbf F$ along it contributes to $Q_\varphi$.}
+\label{fig:pendulum}
+\end{figure}
+\FloatBarrier
+
+\begin{examplebox}{Example 10.3 (Pendulum: a constraint and an exact form)}
+A bob of mass $m$ hangs from a rod of length $\ell$. With $y$ pointing up, the position is $\mathbf r(\varphi)=(\ell\sin\varphi,\,-\ell\cos\varphi)$, so $m=1$ while the ambient space has $n=2$: the Jacobian $\partial\mathbf r/\partial\varphi=\ell(\cos\varphi,\sin\varphi)$ is a $2\times1$ column and has no inverse. For gravity, $\mathbf F=(0,-mg)$,
+\[
+Q_\varphi=\mathbf F\cdot\frac{\partial\mathbf r}{\partial\varphi}=-mg\ell\sin\varphi,
+\qquad
+\eta=-mg\ell\sin\varphi\,d\varphi .
+\]
+This is the restoring torque. Moreover $\eta$ is exact: with $V(\varphi)=-mg\ell\cos\varphi$ we have $dV=mg\ell\sin\varphi\,d\varphi$, so
+\[
+\eta=-dV.
+\]
+A force whose work 1-form is $-dV$ is called \emph{conservative}: by the remark at the end of Section~4, the work done around any closed path in configuration space is $0$.
+\end{examplebox}
+
 \end{document}
