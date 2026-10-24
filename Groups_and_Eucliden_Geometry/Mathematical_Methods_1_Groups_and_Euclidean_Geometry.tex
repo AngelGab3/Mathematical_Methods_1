@@ -1,0 +1,1259 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage[margin=2.4cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usetikzlibrary{arrows.meta,calc,babel,positioning,decorations.markings,3d}
+\usepackage{placeins}
+\usepackage{needspace}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{array}
+
+% ============ PALETA: NEGRO, NARANJA Y CREMA ============
+\definecolor{blackmain}{HTML}{1A1A1A}
+\definecolor{orangeacc}{HTML}{E65C00}
+\definecolor{creambg}{HTML}{FBF8F1}
+\definecolor{orangebg}{HTML}{FFF4EB}
+\definecolor{graymuted}{HTML}{7A746E}
+\definecolor{pureblack}{HTML}{0D0D0D}
+
+% ============ CABECERAS Y PIES ============
+\setlength{\headheight}{24pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{blackmain}{\textbf{\small Métodos Matemáticos I}}}
+\fancyhead[R]{\textcolor{orangeacc}{\textbf{\small Geometría Euclídea y Grupos de Simetría}}}
+\fancyfoot[C]{\textcolor{graymuted}{\thepage}}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{orangeacc}\leaders\hrule height \headrulewidth\hfill}}
+
+\setlist[itemize]{label={\small\textcolor{orangeacc}{$\blacksquare$}},leftmargin=1.6em,itemsep=2pt}
+\setlist[enumerate]{label={\textcolor{orangeacc}{\textbf{\arabic*.}}},leftmargin=1.8em,itemsep=2pt}
+
+% ============ TÍTULOS ============
+\newcommand{\manualsection}[1]{%
+  \Needspace{8\baselineskip}%
+  \vspace{0.4cm}
+  \par\noindent{\Large\bfseries\color{blackmain} #1}\par\nobreak
+  \noindent{\color{orangeacc}\rule{\linewidth}{1.4pt}}\par\nobreak
+  \vspace{0.18cm}
+}
+
+\newcommand{\manualsubsection}[1]{%
+  \Needspace{5\baselineskip}%
+  \par\vspace{0.25cm}\noindent{\large\bfseries\color{orangeacc} #1}\par\nobreak
+  \vspace{0.12cm}
+}
+
+% ============ CAJAS DE CONTENIDO ============
+\newtcolorbox{infobox}[2][orangeacc]{
+  enhanced,breakable,
+  colback=creambg,colframe=#1!90!black,
+  boxrule=1pt,arc=2mm,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,
+  before upper={\textbf{\color{#1!95!black}\large #2}\par\nobreak
+    {\color{#1!50}\rule{\linewidth}{0.6pt}}\par\nobreak\smallskip}
+}
+
+\newtcolorbox{examplebox}[1]{
+  enhanced,breakable,
+  colback=orangebg,colframe=orangeacc!85!black,
+  boxrule=1pt,arc=2mm,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,
+  before upper={\textbf{\color{orangeacc!95!black}\large #1}\par\nobreak
+    {\color{orangeacc!40}\rule{\linewidth}{0.6pt}}\par\nobreak\smallskip}
+}
+
+\newtcolorbox{theorembox}[1]{
+  enhanced,breakable,
+  colback=creambg!70!white,colframe=pureblack,
+  boxrule=1.1pt,arc=2mm,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,
+  before upper={\textbf{\color{pureblack}\large #1}\par\nobreak
+    {\color{orangeacc}\rule{\linewidth}{0.8pt}}\par\nobreak\smallskip}
+}
+
+\newcommand{\term}[1]{\textbf{\color{orangeacc}#1}}
+\newcommand{\termb}[1]{\textbf{\color{blackmain}#1}}
+\renewcommand{\familydefault}{\rmdefault}
+\tikzset{every node/.append style={font=\rmfamily}}
+
+\begin{document}
+\color{blackmain}
+
+% ============ ENCABEZADO PRINCIPAL ============
+\begin{center}
+  {\LARGE\textbf{\color{blackmain}Geometría Euclídea y Grupos de Transformaciones}}\\[0.2cm]
+  {\Large\textcolor{orangeacc}{\textbf{Isometrías, rotaciones, traslaciones y generadores en $\mathbb{E}^n$}}}\\[0.35cm]
+  {\large\textcolor{graymuted}{Gabriel Velazquez}}\\[0.3cm]
+\end{center}
+
+% =====================================================================
+\manualsection{1. Isometrías: la matemática del movimiento rígido}
+
+En física clásica, un \emph{cuerpo rígido} es un sistema de partículas cuyas distancias mutuas permanecen inalteradas sin importar cómo se mueva por el espacio. Si pensamos el espacio físico como el espacio afín euclídeo $\mathbb{E}^n$ (dotado del producto escalar usual y la métrica inducida $d(p,q)=\|p-q\|$), la pregunta central es: \emph{¿qué aplicaciones $F:\mathbb{E}^n\to\mathbb{E}^n$ preservan la rigidez de cualquier figura?}
+
+\begin{infobox}[orangeacc]{Definición 1.1 (Isometría euclídea)}
+Una \term{isometría} (o movimiento rígido) de $\mathbb{E}^n$ es una aplicación $F:\mathbb{E}^n\to\mathbb{E}^n$ que conserva la distancia euclídea entre todo par de puntos:
+\begin{equation}
+  d\bigl(F(p),\,F(q)\bigr) = d(p,q) \iff \|F(p)-F(q)\| = \|p-q\|
+  \qquad\text{para todos } p,q\in\mathbb{E}^n .
+\end{equation}
+\end{infobox}
+
+Aunque la definición sólo exige conservar longitudes de segmentos, su rigidez impone consecuencias mucho más fuertes: al conservar los tres lados de cualquier triángulo (criterio LLL), una isometría conserva automáticamente todos los \term{ángulos}, las \term{áreas}, los \term{volúmenes} y la colinealidad de puntos (transforma rectas en rectas).
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.1]
+  % Cuadrícula sutil de fondo
+  \draw[graymuted!20,step=0.5] (-0.6,-0.8) grid (9.8,2.6);
+
+  % Triángulo original
+  \coordinate (A) at (0,0);
+  \coordinate (B) at (2.2,0.2);
+  \coordinate (C) at (0.6,1.7);
+  \coordinate (G) at ($0.3333*(A)+0.3333*(B)+0.3333*(C)$);
+
+  \fill[orangebg,opacity=0.85] (A)--(B)--(C)--cycle;
+  \draw[blackmain,very thick] (A)--(B)--(C)--cycle;
+
+  \fill[blackmain] (A) circle (2pt) node[below left] {\small $p$};
+  \fill[blackmain] (B) circle (2pt) node[below right] {\small $q$};
+  \fill[blackmain] (C) circle (2pt) node[above left] {\small $r$};
+
+  % Cota en original
+  \draw[<->,graymuted,thick] ($(A)+(0,-0.3)$) -- ($(B)+(0,-0.3)$)
+    node[midway,below] {\scriptsize $d(p,q)=\ell$};
+  \node[blackmain,font=\small\bfseries] at (1.1,2.2) {Cuerpo original};
+
+  % Flecha de transformación
+  \draw[->,orangeacc,ultra thick] (3.0,0.9) .. controls (4.1,1.4) and (5.0,1.4) .. (6.1,0.9)
+    node[midway,above] {\large $F$}
+    node[midway,below,graymuted] {\scriptsize movimiento rígido};
+
+  % Triángulo transformado (rotado 50 grados + trasladado)
+  \begin{scope}[xshift=7.6cm,yshift=0.2cm,rotate=50]
+    \coordinate (Ar) at (0,0);
+    \coordinate (Br) at (2.2,0.2);
+    \coordinate (Cr) at (0.6,1.7);
+    \fill[orangeacc!18,opacity=0.9] (Ar)--(Br)--(Cr)--cycle;
+    \draw[orangeacc,very thick] (Ar)--(Br)--(Cr)--cycle;
+    \draw[<->,orangeacc!80!black,thick] ($(Ar)+(0,-0.28)$) -- ($(Br)+(0,-0.28)$)
+      node[midway,below right,sloped] {\scriptsize $d(F(p),F(q))=\ell$};
+  \end{scope}
+
+  \fill[blackmain] (Ar) circle (2pt) node[below] {\small $F(p)$};
+  \fill[blackmain] (Br) circle (2pt) node[right] {\small $F(q)$};
+  \fill[blackmain] (Cr) circle (2pt) node[above left] {\small $F(r)$};
+  \node[orangeacc,font=\small\bfseries] at (7.8,2.2) {Imagen isométrica};
+\end{tikzpicture}
+\caption{Una isometría $F$ desplaza, rota o refleja el triángulo sin deformarlo: la distancia entre cualquier par de puntos antes y después de aplicar $F$ es idéntica.}
+\label{fig:isometria}
+\end{figure}
+\FloatBarrier
+
+Dos familias fundamentales de isometrías saltan a la vista: las \term{traslaciones} $T_{\mathbf{a}}(p)=p+\mathbf{a}$, que desplazan todos los puntos en la misma dirección, y las \term{transformaciones ortogonales} $C(p)$ (rotaciones y reflexiones), que dejan fijo el origen. El siguiente teorema fundamental demuestra que \emph{no existen más}: todo movimiento rígido es combinación de ambos.
+
+\begin{theorembox}{Teorema 1.2 (Estructura y descomposición de las isometrías)}
+Toda isometría $F:\mathbb{E}^n\to\mathbb{E}^n$ se descompone de manera \textbf{única} como una transformación lineal ortogonal $C\in O(n)$ seguida de una traslación $T_{\mathbf{a}}$ por un vector $\mathbf{a}\in\mathbb{R}^n$:
+\begin{equation}
+  F(p) = C p + \mathbf{a}, \qquad\text{donde }\; C^T C = I \;\text{ y }\; \mathbf{a} = F(\mathbf{0}).
+\end{equation}
+En particular, toda isometría que fija el origen ($F(\mathbf{0})=\mathbf{0}$) es necesariamente una aplicación lineal ortogonal ($F=C$).
+\end{theorembox}
+
+\emph{Idea geométrica de la prueba:} Si $F$ es una isometría, definimos $\mathbf{a}=F(\mathbf{0})$ y construimos $C(p) = F(p) - \mathbf{a} = (T_{-\mathbf{a}}\circ F)(p)$. Como $T_{-\mathbf{a}}$ y $F$ conservan distancias, su composición $C$ también las conserva y además cumple $C(\mathbf{0})=\mathbf{0}$. Al fijar el origen, conserva las normas $\|C(p)\| = \|p\|$ y, por la identidad de polarización (que veremos en la Sección 4), conserva el producto escalar y es lineal.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.96]
+  % Paso 1: Original
+  \begin{scope}
+    \draw[graymuted!40,->] (-0.4,0)--(3.0,0) node[right] {\scriptsize $x$};
+    \draw[graymuted!40,->] (0,-0.4)--(0,2.4) node[above] {\scriptsize $y$};
+    \coordinate (P1) at (2.3,0.4);
+    \coordinate (Q1) at (0.5,1.7);
+    \fill[orangebg] (0,0)--(P1)--(Q1)--cycle;
+    \draw[blackmain,thick] (P1)--(Q1);
+    \draw[->,blackmain,very thick] (0,0)--(P1) node[below right] {\small $p$};
+    \draw[->,blackmain,very thick] (0,0)--(Q1) node[above left] {\small $q$};
+    \fill[blackmain] (0,0) circle (2pt) node[below left] {\small $O$};
+    \node[blackmain,font=\small\bfseries] at (1.3,-0.9) {1. Estado inicial};
+  \end{scope}
+
+  \draw[->,orangeacc,very thick] (3.3,1.0) -- (4.2,1.0) node[midway,above] {\small $C$};
+
+  % Paso 2: Rotación C
+  \begin{scope}[xshift=4.8cm]
+    \draw[graymuted!40,->] (-0.4,0)--(3.0,0) node[right] {\scriptsize $x$};
+    \draw[graymuted!40,->] (0,-0.4)--(0,2.4) node[above] {\scriptsize $y$};
+    \draw[graymuted,dashed] (0,0)--(2.3,0.4) (0,0)--(0.5,1.7) (2.3,0.4)--(0.5,1.7);
+    \begin{scope}[rotate=32]
+      \coordinate (P2) at (2.3,0.4);
+      \coordinate (Q2) at (0.5,1.7);
+    \end{scope}
+    \fill[orangeacc!18] (0,0)--(P2)--(Q2)--cycle;
+    \draw[orangeacc,thick] (P2)--(Q2);
+    \draw[->,orangeacc,very thick] (0,0)--(P2) node[right] {\small $Cp$};
+    \draw[->,orangeacc,very thick] (0,0)--(Q2) node[above] {\small $Cq$};
+    \draw[orangeacc,thick,->] (9.8:1.0) arc (9.8:41.8:1.0);
+    \node[orangeacc] at (26:1.3) {\scriptsize $\theta$};
+    \fill[blackmain] (0,0) circle (2pt) node[below left] {\small $O$};
+    \node[orangeacc,font=\small\bfseries] at (1.3,-0.9) {2. Transformación $C$};
+  \end{scope}
+
+  \draw[->,orangeacc,very thick] (8.2,1.0) -- (9.1,1.0) node[midway,above] {\small $T_{\mathbf{a}}$};
+
+  % Paso 3: Traslación Ta
+  \begin{scope}[xshift=9.7cm]
+    \draw[graymuted!40,->] (-0.4,0)--(3.5,0) node[right] {\scriptsize $x$};
+    \draw[graymuted!40,->] (0,-0.4)--(0,2.6) node[above] {\scriptsize $y$};
+    \begin{scope}[rotate=32]
+      \coordinate (P3) at (2.3,0.4);
+      \coordinate (Q3) at (0.5,1.7);
+    \end{scope}
+    \coordinate (a3) at (1.1,0.65);
+    \coordinate (Fp) at ($(P3)+(a3)$);
+    \coordinate (Fq) at ($(Q3)+(a3)$);
+    \fill[graymuted!15] (0,0)--(P3)--(Q3)--cycle;
+    \fill[orangeacc!25] (a3)--(Fp)--(Fq)--cycle;
+    \draw[orangeacc,thick] (a3)--(Fp)--(Fq)--cycle;
+    \draw[->,graymuted,dotted,thick] (P3)--(Fp);
+    \draw[->,graymuted,dotted,thick] (Q3)--(Fq);
+    \draw[->,orangeacc,very thick] (0,0)--(a3) node[midway,below right] {\small $\mathbf{a}$};
+    \draw[->,blackmain,thick] (0,0)--(Fp) node[right] {\small $F(p)$};
+    \draw[->,blackmain,thick] (0,0)--(Fq) node[above right] {\small $F(q)$};
+    \fill[blackmain] (0,0) circle (2pt) node[below left] {\small $O$};
+    \fill[orangeacc] (a3) circle (2pt);
+    \node[blackmain,font=\small\bfseries] at (1.5,-0.9) {3. Traslación $F(p)=Cp+\mathbf{a}$};
+  \end{scope}
+\end{tikzpicture}
+\caption{Descomposición canónica $F=T_{\mathbf{a}}\circ C$: primero aplicamos la parte lineal ortogonal $C$ (que fija el origen $O$) y después desplazamos todo el espacio mediante el vector $\mathbf{a}=F(O)$.}
+\label{fig:descomposicion}
+\end{figure}
+\FloatBarrier
+
+% =====================================================================
+\manualsection{2. Fundamentos de teoría de grupos aplicados a la geometría}
+
+En el siglo XIX, Felix Klein revolucionó la geometría con su \emph{Programa de Erlangen}: propuso que cada geometría queda completamente definida por el \term{grupo de transformaciones} bajo el cual sus teoremas permanecen invariantes. Como la composición de dos isometrías es otra isometría y todo movimiento rígido puede deshacerse, el conjunto de todas las isometrías de $\mathbb{E}^n$ constituye el \term{grupo euclídeo} $E(n)$.
+
+\manualsubsection{2.1 Definición, axiomas y primeros ejemplos}
+
+\begin{infobox}[orangeacc]{Definición 2.1 (Grupo)}
+Un \term{grupo} $(G,\cdot)$ es un conjunto no vacío $G$ dotado de una operación binaria $\cdot:G\times G\to G$ que satisface cuatro axiomas:
+\begin{enumerate}
+  \item \term{Clausura}: $a\cdot b\in G$ para cualesquiera $a,b\in G$.
+  \item \term{Asociatividad}: $(a\cdot b)\cdot c=a\cdot(b\cdot c)$ para todos $a,b,c\in G$.
+  \item \term{Elemento neutro (identidad)}: existe un único $e\in G$ tal que $e\cdot a=a\cdot e=a$ para todo $a\in G$.
+  \item \term{Elemento inverso}: para cada $a\in G$ existe un único $a^{-1}\in G$ tal que $a\cdot a^{-1}=a^{-1}\cdot a=e$.
+\end{enumerate}
+Si además se cumple la conmutatividad $a\cdot b=b\cdot a$ para todos $a,b\in G$, el grupo se denomina \term{abeliano}.
+\end{infobox}
+
+En geometría, la operación $\cdot$ es casi siempre la \emph{composición de transformaciones} ($\circ$). Las rotaciones en el plano alrededor del mismo punto conmutan (es un grupo abeliano), pero las rotaciones en el espacio tridimensional alrededor de ejes distintos \textbf{no conmutan}: girar un libro $90^\circ$ hacia adelante y $90^\circ$ a la derecha lo deja en una orientación distinta que hacerlo en orden inverso.
+
+\begin{examplebox}{Ejemplo 2.2 (Cinco grupos fundamentales)}
+\begin{itemize}
+  \item $(\mathbb{Z},+)$ y $(\mathbb{R}^n,+)$: los enteros y los vectores de $\mathbb{R}^n$ con la suma usual. Son grupos \emph{abelianos infinitos}. $(\mathbb{R}^n,+)$ modela exactamente el grupo de traslaciones.
+  \item $(\mathbb{Z}_n,+)=\{0,1,\dots,n-1\}$ con la suma módulo $n$: el \term{grupo cíclico} de orden $n$. Es abeliano y finito; modela las rotaciones discretas de un polígono regular de $n$ lados.
+  \item $(\mathrm{GL}(n,\mathbb{R}),\cdot)$: el \term{grupo lineal general} de matrices reales $n\times n$ invertibles ($\det A\neq 0$) con la multiplicación matricial. No es abeliano para $n\ge 2$.
+  \item $(O(n),\cdot)$ y $(SO(n),\cdot)$: los grupos ortogonal y especial ortogonal, formados por las matrices que preservan el producto escalar.
+  \item $(S_n,\circ)$: el \term{grupo simétrico} de todas las biyecciones (permutaciones) del conjunto $\{1,\dots,n\}$. Tiene $n!$ elementos y no es abeliano si $n\ge 3$.
+\end{itemize}
+\end{examplebox}
+
+\begin{figure}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{$}c<{$}|*{4}{>{$}c<{$}}}
+  + \pmod 4 & 0 & 1 & 2 & 3 \\ \hline
+  0 & 0 & 1 & 2 & 3 \\
+  1 & 1 & 2 & 3 & 0 \\
+  2 & 2 & 3 & 0 & 1 \\
+  3 & 3 & 0 & 1 & 2
+\end{tabular}
+\hspace{1.2cm}
+\begin{tikzpicture}[baseline={(0,0)},>=Stealth,scale=0.85]
+  \draw[graymuted,dashed] (0,0) circle (1.1);
+  \foreach \a/\lbl in {0/0, 90/1, 180/2, 270/3} {
+    \fill[blackmain] (\a:1.1) circle (2.2pt);
+    \node[blackmain] at (\a:1.45) {\small $\lbl$};
+  }
+  \draw[->,orangeacc,thick] (15:1.1) arc (15:75:1.1);
+  \draw[->,orangeacc,thick] (105:1.1) arc (105:165:1.1);
+  \draw[->,orangeacc,thick] (195:1.1) arc (195:255:1.1);
+  \draw[->,orangeacc,thick] (285:1.1) arc (285:345:1.1);
+  \node[orangeacc] at (0,0) {\small $+1 \equiv 90^\circ$};
+\end{tikzpicture}
+\caption{Izquierda: Tabla de Cayley de $\mathbb{Z}_4$. Cada fila y columna contiene todos los elementos sin repetir (propiedad de cuadrado latino), y la simetría respecto a la diagonal refleja que $\mathbb{Z}_4$ es abeliano. Derecha: Realización geométrica de $\mathbb{Z}_4$ como rotaciones múltiplos de $90^\circ$.}
+\label{fig:cayley}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{2.2 Orden, subgrupos y el Teorema de Lagrange}
+
+\begin{infobox}[orangeacc]{Definición 2.3 (Orden y Subgrupo)}
+\begin{itemize}
+  \item El \term{orden de un grupo} $G$, denotado $|G|$, es su cardinalidad (número de elementos).
+  \item El \term{orden de un elemento} $g\in G$, denotado $\operatorname{ord}(g)$, es el menor entero positivo $m$ tal que $g^m=e$ (si no existe tal entero, $\operatorname{ord}(g)=\infty$).
+  \item Un subconjunto no vacío $H\subseteq G$ es un \term{subgrupo} de $G$ (notación: $H\le G$) si $H$ es cerrado bajo productos e inversos: para todos $x,y\in H$, se cumple $x y^{-1}\in H$.
+\end{itemize}
+\end{infobox}
+
+En $SO(2)$, la rotación $R(2\pi/n)$ tiene orden $n$: aplicarla $n$ veces consecutivas equivale a dar una vuelta completa de $2\pi$ radianes, regresando a la identidad $I$. En cambio, una rotación por un ángulo $\theta$ inconmensurable con $\pi$ (por ejemplo, $\theta=1\text{ rad}$) nunca vuelve exactamente al punto de partida: tiene orden infinito.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.1]
+  \fill[graymuted!10,draw=graymuted,thick,rounded corners=3pt] (0,0) rectangle (8.2,3.4);
+  \fill[orangebg,draw=orangeacc!75,thick,rounded corners=3pt] (0.4,0.35) rectangle (5.6,2.85);
+  \fill[orangeacc!22,draw=orangeacc,very thick,rounded corners=3pt] (0.8,0.7) rectangle (3.6,2.3);
+
+  \node[graymuted!80!black,anchor=north west] at (0.15,3.3)
+    {\small $\mathrm{GL}(n,\mathbb{R})$: aplicaciones lineales invertibles ($\det A\neq 0$)};
+  \node[orangeacc!75!black,anchor=north west] at (0.55,2.75)
+    {\small $O(n)$: isometrías lineales ($R^TR=I \implies \det R=\pm 1$)};
+  \node[blackmain,anchor=north west] at (0.95,2.2)
+    {\small $\mathbf{SO(n)}$: \textbf{rotaciones puras}};
+  \node[orangeacc!90!black,anchor=north west] at (0.95,1.65)
+    {\footnotesize ($\det R=+1$, preserva orientación)};
+
+  \node[orangeacc!80!black,align=left,anchor=west] at (5.9,1.8)
+    {\footnotesize \textbf{En $O(n)\setminus SO(n)$:}\\[-2pt]
+     \footnotesize reflexiones y rotoinversiones\\[-2pt]
+     \footnotesize ($\det R = -1$)};
+  \draw[->,orangeacc!80!black,thick] (5.8,1.8) -- (4.7,1.8);
+\end{tikzpicture}
+\caption{Jerarquía de subgrupos matriciales: $SO(n) \le O(n) \le \mathrm{GL}(n,\mathbb{R})$.}
+\label{fig:jerarquia}
+\end{figure}
+\FloatBarrier
+
+\begin{theorembox}{Teorema 2.4 (Teorema de Lagrange)}
+Si $G$ es un grupo finito y $H\le G$ es un subgrupo de $G$, entonces el orden de $H$ divide exactamente al orden de $G$:
+\begin{equation}
+  |G| = [G:H]\cdot |H|,
+\end{equation}
+donde el entero $[G:H]$ es el \term{índice} de $H$ en $G$ (el número de clases laterales de $H$). En particular, el orden de cualquier elemento $g\in G$ divide a $|G|$.
+\end{theorembox}
+
+\manualsubsection{2.3 Homomorfismos, núcleo y orientación}
+
+\begin{infobox}[orangeacc]{Definición 2.5 (Homomorfismo y Núcleo)}
+Dados dos grupos $(G,\cdot)$ y $(H,*)$, un \term{homomorfismo} es una aplicación $\varphi:G\to H$ que respeta la estructura de grupo:
+\begin{equation}
+  \varphi(a\cdot b) = \varphi(a) * \varphi(b) \qquad\text{para todos } a,b\in G.
+\end{equation}
+Su \term{núcleo} (o \emph{kernel}), $\ker\varphi = \{g\in G : \varphi(g)=e_H\}$, es siempre un subgrupo normal de $G$ (notación: $\ker\varphi \trianglelefteq G$). Si $\varphi$ es biyectivo, se llama \term{isomorfismo} ($G\cong H$).
+\end{infobox}
+
+El concepto de homomorfismo explica de golpe la relación entre $O(n)$ y $SO(n)$: la función determinante restringida a las matrices ortogonales,
+\[
+  \det : O(n) \longrightarrow (\{+1,-1\},\,\cdot\,),
+\]
+cumple $\det(AB)=(\det A)(\det B)$. Por tanto, es un homomorfismo suprayectivo cuyo núcleo es el conjunto de matrices ortogonales con determinante $+1$:
+\[
+  \ker(\det) = \{R\in O(n) : \det R = +1\} = SO(n).
+\]
+Esto demuestra sin hacer ningún cálculo adicional que $SO(n)$ es un subgrupo normal de índice $2$ dentro de $O(n)$. Geométricamente, $O(n)$ se parte en dos mitades del mismo tamaño: la componente conexa $SO(n)$ (rotaciones propias, que pueden alcanzarse de forma continua desde la identidad $I$) y la clase lateral $O^-(n)$ (transformaciones impropias con $\det=-1$, como reflexiones especulares, que requieren un ``salto'' discreto).
+
+\manualsubsection{2.4 Acciones de grupo: órbitas y estabilizadores}
+
+Un grupo cobra vida geométrica cuando sus elementos actúan como transformaciones sobre los puntos de un espacio $X$.
+
+\begin{infobox}[orangeacc]{Definición 2.6 (Acción de grupo, Órbita y Estabilizador)}
+Una \term{acción} de un grupo $G$ sobre un conjunto $X$ es una aplicación $G\times X\to X$, denotada $(g,x)\mapsto g\cdot x$, tal que:
+\begin{enumerate}
+  \item $e\cdot x = x$ para todo $x\in X$.
+  \item $(gh)\cdot x = g\cdot(h\cdot x)$ para todos $g,h\in G$ y todo $x\in X$.
+\end{enumerate}
+Fijado un punto $x\in X$, definimos dos objetos complementarios:
+\begin{itemize}
+  \item La \term{órbita} de $x$: $\mathrm{Orb}(x) = \{g\cdot x : g\in G\}\subseteq X$ (todos los destinos a los que $G$ lleva a $x$).
+  \item El \term{estabilizador} (o grupo de isotropía) de $x$: $\mathrm{Stab}(x) = \{g\in G : g\cdot x = x\} \le G$ (el subgrupo de simetrías que dejan quieto a $x$).
+\end{itemize}
+Si $G$ es finito, el \termb{Teorema Órbita-Estabilizador} establece que $|\mathrm{Orb}(x)|\cdot |\mathrm{Stab}(x)| = |G|$.
+\end{infobox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.05]
+  % Caso 1: Punto fuera del origen
+  \begin{scope}
+    \coordinate (O) at (0,0);
+    \draw[graymuted!40,->] (-2.0,0)--(2.0,0);
+    \draw[graymuted!40,->] (0,-2.0)--(0,2.0);
+    \draw[graymuted,dashed] (O) circle (1.45);
+    \fill[graymuted] (O) circle (1.5pt) node[below left] {\scriptsize $O$};
+
+    \foreach \i in {0,1,2,3,4,5} {
+      \coordinate (P\i) at ({1.45*cos(60*\i)},{1.45*sin(60*\i)});
+      \fill[blackmain] (P\i) circle (2.2pt);
+    }
+    \node[blackmain,right] at (1.5,0.18) {\small $x$};
+    \node[blackmain,above right] at ({1.45*cos(60)},{1.45*sin(60)}) {\small $g\cdot x$};
+    \node[blackmain,above left] at ({1.45*cos(120)},{1.45*sin(120)}) {\small $g^2\cdot x$};
+
+    \foreach \i in {0,1,2,3,4,5} {
+      \pgfmathtruncatemacro{\j}{mod(\i+1,6)}
+      \draw[->,orangeacc,thick] ({60*\i+8}:1.45) arc ({60*\i+8}:{60*\j-8}:1.45);
+    }
+    \node[blackmain,align=center] at (0,-2.55)
+      {\small \textbf{Punto general $x\neq O$}\\[1pt]
+       \footnotesize $|\mathrm{Orb}(x)|=6$ vértices, \quad $\mathrm{Stab}(x)=\{I\}$ (orden $1$)};
+  \end{scope}
+
+  % Caso 2: El origen
+  \begin{scope}[xshift=6.5cm]
+    \coordinate (O2) at (0,0);
+    \draw[graymuted!40,->] (-2.0,0)--(2.0,0);
+    \draw[graymuted!40,->] (0,-2.0)--(0,2.0);
+    \fill[orangeacc] (O2) circle (3pt) node[below left,blackmain] {\small $O$};
+    \draw[->,orangeacc,thick] (30:0.55) arc (30:330:0.55);
+    \node[orangeacc,above] at (0,0.6) {\scriptsize $\forall g\in C_6$};
+    \node[blackmain,align=center] at (0,-2.55)
+      {\small \textbf{Centro de giro $x=O$}\\[1pt]
+       \footnotesize $|\mathrm{Orb}(O)|=1$ punto, \quad $\mathrm{Stab}(O)=C_6$ (orden $6$)};
+  \end{scope}
+\end{tikzpicture}
+\caption{Acción del grupo cíclico $C_6 = \langle R(60^\circ)\rangle$ sobre el plano $\mathbb{E}^2$. En ambos casos se verifica el Teorema Órbita-Estabilizador: $|\mathrm{Orb}|\cdot|\mathrm{Stab}| = 6\times 1 = 1\times 6 = 6 = |C_6|$.}
+\label{fig:accion}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{2.5 El grupo euclídeo $E(n)$ como producto semidirecto}
+
+Volvamos al Teorema 1.2: cada isometría $F\in E(n)$ queda determinada por un par $(\mathbf{a},C)$ donde $\mathbf{a}\in\mathbb{R}^n$ es una traslación y $C\in O(n)$ es una transformación ortogonal, actuando según $F(p)=Cp+\mathbf{a}$. ¿Cómo se multiplican (componen) dos pares $(\mathbf{a}_1,C_1)$ y $(\mathbf{a}_2,C_2)$? Evaluemos $F_1(F_2(p))$:
+\begin{equation}
+  (F_1\circ F_2)(p) = C_1(C_2 p + \mathbf{a}_2) + \mathbf{a}_1 = (C_1 C_2)p + (\mathbf{a}_1 + C_1\mathbf{a}_2).
+\end{equation}
+Observa el término de traslación resultante: \textbf{no es} $\mathbf{a}_1+\mathbf{a}_2$, sino $\mathbf{a}_1 + C_1\mathbf{a}_2$. La rotación $C_1$ del primer movimiento actúa girando el vector de traslación $\mathbf{a}_2$ del segundo. Esta estructura algebraica se llama \term{producto semidirecto}.
+
+\begin{infobox}[orangeacc]{Definición 2.7 (Producto semidirecto y Grupo Euclídeo)}
+Sean $N$ y $H$ grupos y sea $\varphi:H\to\mathrm{Aut}(N)$ un homomorfismo de $H$ en el grupo de automorfismos de $N$. El \term{producto semidirecto} $N\rtimes_\varphi H$ es el conjunto producto $N\times H$ equipado con la ley de composición:
+\begin{equation}
+  (n_1,h_1)\cdot(n_2,h_2) = \bigl(n_1\cdot\varphi(h_1)(n_2),\,h_1 h_2\bigr).
+\end{equation}
+Tomando $N=(\mathbb{R}^n,+)$, $H=O(n)$ y $\varphi(C)(\mathbf{a})=C\mathbf{a}$, obtenemos la estructura exacta del \term{grupo euclídeo} y del \term{grupo euclídeo especial} (movimientos rígidos propios):
+\begin{equation}
+  E(n) \cong \mathbb{R}^n \rtimes O(n), \qquad SE(n) \cong \mathbb{R}^n \rtimes SO(n).
+\end{equation}
+\end{infobox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  box/.style={draw=blackmain,rounded corners=3pt,fill=creambg,thick,
+    align=center,inner sep=5pt,font=\small}]
+  \node[box,text width=3.4cm] (N) {Subgrupo normal $\mathbb{R}^n$\\[-1pt]{\scriptsize Traslaciones $T_{\mathbf{a}}$}};
+  \node[orangeacc,font=\Large\bfseries] at (2.5,0) {$\rtimes$};
+  \node[box,fill=orangebg,draw=orangeacc,text width=3.4cm] at (5.0,0) (H) {Subgrupo ortogonal $O(n)$\\[-1pt]{\scriptsize Rotaciones/reflexiones $C$}};
+  \node[box,text width=7.2cm] at (2.5,-1.7) (E) {\textbf{Grupo Euclídeo} $E(n)=\mathbb{R}^n\rtimes O(n)$\\[-1pt]{\scriptsize Ley de composición: $(\mathbf{a}_1,C_1)\cdot(\mathbf{a}_2,C_2) = (\mathbf{a}_1+C_1\mathbf{a}_2,\, C_1C_2)$}};
+  \draw[->,orangeacc,very thick] (N.south) -- ($(E.north)-(1.5,0)$);
+  \draw[->,orangeacc,very thick] (H.south) -- ($(E.north)+(1.5,0)$);
+  \draw[->,orangeacc,thick,dashed] (H.north) .. controls (3.5,1.0) and (1.5,1.0) .. (N.north)
+    node[midway,above,font=\scriptsize] {$O(n)$ actúa rotando los vectores de $\mathbb{R}^n$};
+\end{tikzpicture}
+\caption{En el producto semidirecto $\mathbb{R}^n\rtimes O(n)$, el subgrupo ortogonal $O(n)$ ``tuerce'' la suma de traslaciones porque rotar y luego trasladar no conmuta con trasladar y luego rotar: $C\circ T_{\mathbf{a}} = T_{C\mathbf{a}}\circ C$.}
+\label{fig:semidirecto}
+\end{figure}
+\FloatBarrier
+
+% =====================================================================
+\manualsection{3. Comportamiento infinitesimal: el diferencial de una isometría}
+
+Cuando estudiamos curvas o superficies diferenciables en $\mathbb{E}^n$, necesitamos saber cómo transforma una isometría $F(p)=Cp+\mathbf{a}$ a los \emph{vectores velocidad} (vectores tangentes $v_p\in T_p\mathbb{E}^n$). Como la traslación $\mathbf{a}$ es un vector constante, al derivar desaparece y la aplicación diferencial (o \emph{pushforward}) $dF_p$ coincide exactamente con la parte lineal ortogonal $C$:
+\begin{equation}
+  dF_p(v_p) = (C v)_{F(p)}.
+\end{equation}
+
+\begin{infobox}[orangeacc]{Proposición 3.1 (Invariancia infinitesimal del producto escalar)}
+Para todo punto $p\in\mathbb{E}^n$ y todo par de vectores tangentes $v_p,w_p\in T_p\mathbb{E}^n$, el diferencial $dF_p$ conserva el producto escalar euclídeo:
+\begin{equation}
+  dF_p(v_p)\cdot dF_p(w_p) = (Cv)\cdot(Cw) = v^T C^T C w = v^T w = v_p\cdot w_p.
+\end{equation}
+\end{infobox}
+
+De esta única ecuación se desprenden tres invariantes geométricos cruciales:
+\begin{itemize}
+  \item \term{Normas, longitudes de arco y ángulos}: $\|dF_p(v_p)\|=\|v_p\|$. Si $\alpha(t)$ es una curva regular, su rapidez $\|\alpha'(t)\|$ y su longitud de arco no se alteran al mover la curva con $F$.
+  \item \term{Marcos ortonormales}: Toda base ortonormal $\{e_1,\dots,e_n\}$ de $T_p\mathbb{E}^n$ es enviada por $dF_p$ a una base ortonormal $\{Ce_1,\dots,Ce_n\}$ en $T_{F(p)}\mathbb{E}^n$.
+  \item \term{Invariancia del triedro de Frenet-Serret}: Si $\alpha:I\to\mathbb{E}^3$ es una curva parametrizada por longitud de arco y $\bar\alpha = F\circ\alpha$, entonces la \term{curvatura} es un invariante absoluto ($\bar\kappa = \kappa$), mientras que la \term{torsión} cumple $\bar\tau = (\det C)\,\tau$: se conserva bajo movimientos rígidos propios ($\det C=+1$) y cambia de signo bajo reflexiones ($\det C=-1$, como al mirar una hélice en un espejo).
+\end{itemize}
+
+% =====================================================================
+\manualsection{4. Rotaciones: caracterización algebraica}
+
+Centrémonos ahora en las isometrías que fijan el origen.
+
+\begin{infobox}[orangeacc]{Definición 4.1 (Rotación en $\mathbb{R}^n$)}
+Una \term{rotación} (o rotación propia) en $\mathbb{R}^n$ es una transformación lineal $R:\mathbb{R}^n\to\mathbb{R}^n$ que satisface dos condiciones equivalentes a conservar geometría y orientación:
+\begin{enumerate}
+  \item \term{Ortogonalidad (preserva el producto escalar)}: $(R\mathbf{u})\cdot(R\mathbf{v})=\mathbf{u}\cdot\mathbf{v}$ para todos $\mathbf{u},\mathbf{v}\in\mathbb{R}^n$, lo cual equivale matricialmente a $R^T R = R R^T = I$ (es decir, $R^{-1}=R^T$).
+  \item \term{Orientación positiva}: $\det R = +1$.
+\end{enumerate}
+El conjunto de todas las rotaciones de $\mathbb{R}^n$ forma el \term{grupo especial ortogonal} $SO(n)$.
+\end{infobox}
+
+\manualsubsection{4.1 Demostración rigurosa: de conservar longitudes a $R^T R = I$}
+
+A menudo se define una transformación ortogonal exigiendo únicamente que conserve la longitud de cada vector: $\|R\mathbf{v}\|=\|\mathbf{v}\|$. ¿Por qué conservar normas obliga a conservar también los ángulos (el producto escalar) y a que las columnas de $R$ sean ortonormales?
+\begin{enumerate}
+  \item \textbf{Identidad de polarización:} En cualquier espacio con producto escalar, el producto punto puede recuperarse exclusivamente a partir de normas:
+  \[
+    \mathbf{u}\cdot\mathbf{v} = \frac{1}{2}\Bigl(\|\mathbf{u}+\mathbf{v}\|^2 - \|\mathbf{u}\|^2 - \|\mathbf{v}\|^2\Bigr).
+  \]
+  Como $R$ es lineal y conserva cada una de las tres normas del miembro derecho, necesariamente conserva el producto punto: $(R\mathbf{u})\cdot(R\mathbf{v}) = \mathbf{u}\cdot\mathbf{v}$.
+  \item \textbf{Traducción matricial:} Escribiendo el producto escalar como $\mathbf{u}\cdot\mathbf{v}=\mathbf{u}^T\mathbf{v}$, tenemos:
+  \[
+    (R\mathbf{u})^T(R\mathbf{v}) = \mathbf{u}^T (R^T R)\mathbf{v} = \mathbf{u}^T I \mathbf{v} \iff \mathbf{u}^T(R^T R - I)\mathbf{v} = 0 \quad\forall \mathbf{u},\mathbf{v}\in\mathbb{R}^n.
+  \]
+  Eligiendo $\mathbf{u}=\mathbf{e}_i$ y $\mathbf{v}=\mathbf{e}_j$ de la base canónica, la entrada $(i,j)$ de la matriz $R^T R - I$ debe ser cero para todo $i,j$. Por lo tanto, $R^T R = I$.
+  \item \textbf{Interpretación por columnas:} Si escribimos $R = [\mathbf{c}_1 \;\cdots\; \mathbf{c}_n]$ en términos de sus vectores columna, la entrada $(i,j)$ del producto $R^T R = I$ es $\mathbf{c}_i^T \mathbf{c}_j = \delta_{ij}$. Es decir, $R\in O(n)$ si y sólo si sus columnas (y sus filas) forman una \term{base ortonormal} de $\mathbb{R}^n$.
+  \item \textbf{El determinante:} Aplicando determinantes a $R^T R = I$ usamos que $\det(AB)=\det A\det B$ y $\det(R^T)=\det R$:
+  \[
+    \det(R^T R) = (\det R)^2 = \det(I) = 1 \implies \det R \in \{+1,-1\}.
+  \]
+\end{enumerate}
+
+% =====================================================================
+\manualsection{5. Rotación activa en 2D: giro físico del objeto}
+
+En física y geometría diferencial es indispensable distinguir entre dos puntos de vista duales:
+\begin{itemize}
+  \item \term{Transformación activa}: el sistema de coordenadas permanece fijo en el laboratorio y \emph{movemos físicamente el vector u objeto}.
+  \item \term{Transformación pasiva}: el objeto físico permanece inmóvil y \emph{giramos nuestro sistema de ejes coordenados} para describirlo desde otra perspectiva (Sección 8).
+\end{itemize}
+
+\begin{infobox}[orangeacc]{Pregunta de la rotación activa}
+``Dejando los ejes $x,y$ fijos, si giro físicamente un vector $\mathbf{v}$ un ángulo $\theta$ en sentido antihorario, ¿cuáles son las coordenadas del nuevo vector rotado $\mathbf{v}' = R(\theta)\mathbf{v}$?''
+\end{infobox}
+
+\manualsubsection{5.1 Construcción geométrica desde la base canónica}
+
+Por linealidad, toda matriz queda determinada por las imágenes de los vectores de la base canónica $\mathbf{e}_1=(1,0)^T$ y $\mathbf{e}_2=(0,1)^T$: estas imágenes son precisamente las columnas de $R(\theta)$.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.55]
+  \draw[graymuted!60,->] (-1.35,0)--(2.1,0) node[right] {$x$};
+  \draw[graymuted!60,->] (0,-0.4)--(0,1.9) node[above] {$y$};
+  \draw[graymuted,dashed] (1.3,0) arc (0:180:1.3);
+
+  % Base original
+  \draw[->,blackmain,very thick] (0,0) -- (1.3,0) node[below right] {$\mathbf{e}_1=(1,0)$};
+  \draw[->,blackmain,very thick] (0,0) -- (0,1.3) node[above right] {$\mathbf{e}_2=(0,1)$};
+
+  % Base rotada
+  \def\ang{38}
+  \draw[->,orangeacc,ultra thick] (0,0) -- (\ang:1.3) node[above right] {$R(\theta)\mathbf{e}_1$};
+  \draw[->,orangeacc,ultra thick] (0,0) -- ({\ang+90}:1.3) node[above left] {$R(\theta)\mathbf{e}_2$};
+
+  % Arcos de ángulo
+  \draw[->,orangeacc,thick] (0.5,0) arc (0:\ang:0.5);
+  \node[orangeacc] at ({\ang/2}:0.66) {\small $\theta$};
+  \draw[->,orangeacc,thick] (0,0.5) arc (90:{\ang+90}:0.5);
+  \node[orangeacc] at ({\ang/2+90}:0.66) {\small $\theta$};
+
+  % Proyecciones de Re1
+  \draw[graymuted,dotted,thick] (\ang:1.3) -- ({1.3*cos(\ang)},0)
+    node[below,blackmain] {\scriptsize $\cos\theta$};
+  \draw[graymuted,dotted,thick] (\ang:1.3) -- (0,{1.3*sin(\ang)})
+    node[left,blackmain] {\scriptsize $\sin\theta$};
+
+  % Proyecciones de Re2
+  \draw[graymuted,dotted,thick] ({\ang+90}:1.3) -- ({-1.3*sin(\ang)},0)
+    node[below,orangeacc!85!black] {\scriptsize $-\sin\theta$};
+  \draw[graymuted,dotted,thick] ({\ang+90}:1.3) -- (0,{1.3*cos(\ang)});
+\end{tikzpicture}
+\caption{Efecto de una rotación antihoraria de ángulo $\theta$ sobre la base canónica de $\mathbb{R}^2$. El vector $\mathbf{e}_1$ pasa al primer cuadrante y $\mathbf{e}_2$ entra al segundo cuadrante con abscisa negativa $-\sin\theta$.}
+\label{fig:rot2d}
+\end{figure}
+\FloatBarrier
+
+Observando los triángulos rectángulos de la Figura \ref{fig:rot2d}:
+\begin{equation}
+  R(\theta)\mathbf{e}_1 = \begin{pmatrix}\cos\theta \\ \sin\theta\end{pmatrix}, \qquad
+  R(\theta)\mathbf{e}_2 = \begin{pmatrix}-\sin\theta \\ \phantom{-}\cos\theta\end{pmatrix}.
+\end{equation}
+Por linealidad, para cualquier vector $\mathbf{v} = x\mathbf{e}_1 + y\mathbf{e}_2$:
+\begin{equation}
+  R(\theta)\mathbf{v} = x\,R(\theta)\mathbf{e}_1 + y\,R(\theta)\mathbf{e}_2
+  = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \phantom{-}\cos\theta \end{pmatrix}
+    \begin{pmatrix} x \\ y \end{pmatrix}.
+\end{equation}
+
+\begin{theorembox}{Matriz de rotación activa en 2D}
+Todo elemento del grupo $SO(2)$ tiene la forma:
+\begin{equation}
+  R(\theta) = \begin{pmatrix}
+    \cos\theta & -\sin\theta \\
+    \sin\theta & \phantom{-}\cos\theta
+  \end{pmatrix}, \qquad \theta\in[0,2\pi).
+\end{equation}
+Además, $R(\alpha)R(\beta) = R(\alpha+\beta)$, lo que demuestra que $SO(2)$ es un grupo abeliano isomorfo al círculo unitario $S^1 \subset \mathbb{C}$ (identificando $R(\theta)$ con el número complejo $e^{i\theta}=\cos\theta+i\sin\theta$).
+\end{theorembox}
+
+% =====================================================================
+\manualsection{6. Rotaciones en 3D alrededor de los ejes canónicos}
+
+Al pasar de $\mathbb{R}^2$ a $\mathbb{R}^3$ ocurre un fenómeno topológico extraordinario descubierto por Leonhard Euler en 1775: mientras que en 2D una rotación sólo deja fijo un punto (el origen), en 3D toda rotación deja fija una \emph{recta completa}.
+
+\begin{theorembox}{Teorema 6.1 (Teorema del eje de rotación de Euler)}
+Para toda matriz $R\in SO(3)$ distinta de la identidad, existe un vector unitario $\hat{\mathbf{n}}\in\mathbb{R}^3$ tal que $R\hat{\mathbf{n}}=\hat{\mathbf{n}}$ (es decir, $\lambda=1$ es siempre un autovalor de $R$). La recta generada por $\hat{\mathbf{n}}$ se denomina \term{eje de rotación}.
+\end{theorembox}
+
+\emph{Demostración algebraica breve:} Calculamos el determinante de $R-I$. Usando que $R^T R=I$, $\det R=1$ y $\det(A^T)=\det A$:
+\[
+  \det(R - I) = \det(R - R R^T) = \det\bigl(R(I - R^T)\bigr) = \det(R)\det\bigl((I-R)^T\bigr) = 1\cdot\det(I - R) = (-1)^3\det(R-I).
+\]
+En dimensión impar ($n=3$), $(-1)^3=-1$, por lo que $\det(R-I) = -\det(R-I) \implies \det(R-I)=0$. Luego $\lambda=1$ es raíz del polinomio característico de $R$.
+
+\begin{figure}[htbp]
+\centering
+\tdplotsetmaincoords{65}{120}
+\begin{tikzpicture}[tdplot_main_coords,>=Stealth,scale=2.0]
+  % Ejes coordenados
+  \draw[graymuted!70,->] (0,0,0)--(2.2,0,0) node[below left] {$x$};
+  \draw[graymuted!70,->] (0,0,0)--(0,2.2,0) node[below right] {$y$};
+  \draw[graymuted!70,->] (0,0,0)--(0,0,2.1) node[above] {$z$};
+
+  % Eje de rotación destacado
+  \draw[orangeacc,ultra thick] (0,0,-0.4)--(0,0,1.9);
+
+  % Círculo en perspectiva real en el plano xy (z=0) usando tdplotdrawarc
+  \tdplotdrawarc[graymuted,dashed]{(0,0,0)}{1.4}{0}{360}{}{}
+
+  % Vectores en el plano xy
+  \draw[->,blackmain,very thick] (0,0,0) -- (1.4,0,0) node[below left] {$\mathbf{v}$};
+  \draw[->,orangeacc,very thick] (0,0,0) -- ({1.4*cos(50)},{1.4*sin(50)},0)
+    node[below right] {$R_z(\theta)\mathbf{v}$};
+
+  % Arco del ángulo theta en perspectiva real
+  \tdplotdrawarc[->,orangeacc,thick]{(0,0,0)}{0.75}{0}{50}{anchor=north west}{\small $\theta$}
+
+  % Punto fijo sobre el eje z
+  \fill[blackmain] (0,0,1.35) circle (1.5pt) node[right=3pt] {\small punto fijo $(0,0,z)$};
+\end{tikzpicture}
+\caption{Rotación activa $R_z(\theta)$ alrededor del eje $z$: todos los puntos del eje $z$ permanecen inmóviles y cada plano horizontal $z=\text{cte}$ gira rígidamente como un plano 2D.}
+\label{fig:rot3d}
+\end{figure}
+\FloatBarrier
+
+Para construir las rotaciones elementales alrededor de los ejes coordenados $x,y,z$, fijamos la coordenada del eje de giro (poniendo un $1$ en la diagonal principal) e insertamos el bloque 2D en las dos coordenadas restantes siguiendo la \term{regla de la mano derecha} (orientación cíclica $x\to y\to z\to x$):
+\begin{equation}
+  R_x(\theta) =
+  \begin{pmatrix}
+    1 & 0 & 0 \\
+    0 & \cos\theta & -\sin\theta \\
+    0 & \sin\theta & \phantom{-}\cos\theta
+  \end{pmatrix}, \quad
+  R_y(\theta) =
+  \begin{pmatrix}
+    \phantom{-}\cos\theta & 0 & \sin\theta \\
+    0 & 1 & 0 \\
+    -\sin\theta & 0 & \cos\theta
+  \end{pmatrix}, \quad
+  R_z(\theta) =
+  \begin{pmatrix}
+    \cos\theta & -\sin\theta & 0 \\
+    \sin\theta & \phantom{-}\cos\theta & 0 \\
+    0 & 0 & 1
+  \end{pmatrix}.
+\end{equation}
+\textbf{¿Por qué parecen invertidos los signos de $\sin\theta$ en $R_y(\theta)$?} Por la simetría cíclica del producto vectorial: al apuntar con el pulgar derecho hacia $+y$, los dedos curvan desde $+z$ hacia $+x$ (no de $+x$ hacia $+z$). Por tanto, un giro pequeño $\theta>0$ alrededor de $y$ lleva al vector $\mathbf{e}_z=(0,0,1)^T$ hacia $(\sin\theta,0,\cos\theta)^T$ (tercera columna de $R_y$).
+
+% =====================================================================
+\manualsection{7. Rotación alrededor de un eje arbitrario: Fórmula de Rodrigues}
+
+Supongamos que queremos rotar un vector $\mathbf{r}\in\mathbb{R}^3$ un ángulo $\theta$ alrededor de un eje cualquiera definido por un vector unitario $\hat{\mathbf{n}}=(n_x,n_y,n_z)^T$ ($\|\hat{\mathbf{n}}\|=1$). Existen dos caminos complementarios para resolver el problema: el método de \term{conjugación (alineación de ejes)} y la \term{descomposición geométrica directa (fórmula de Rodrigues)}.
+
+\manualsubsection{7.1 Método 1: Conjugación (llevar el problema al eje $z$)}
+
+Si encontramos una rotación auxiliar $A\in SO(3)$ que envíe el eje canónico $\mathbf{e}_z$ al eje $\hat{\mathbf{n}}$ (es decir, $A\mathbf{e}_z = \hat{\mathbf{n}}$), entonces $A^{-1}=A^T$ hace lo opuesto: alinea $\hat{\mathbf{n}}$ con el eje $z$. La rotación buscada se obtiene en tres pasos:
+\begin{equation}
+  R_{\hat{\mathbf{n}}}(\theta) = A \, R_z(\theta) \, A^T.
+\end{equation}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  box/.style={draw=blackmain,rounded corners=2pt,fill=creambg,thick,
+    align=center,inner sep=4pt,font=\small}]
+  \node[box,text width=2.4cm] (r) {Vector $\mathbf{r}$\\[-1pt]{\scriptsize eje inclinado $\hat{\mathbf{n}}$}};
+  \node[box,text width=2.5cm,right=1.1cm of r] (s1) {$A^T\mathbf{r}$\\[-1pt]{\scriptsize $\hat{\mathbf{n}}$ alineado con $\mathbf{e}_z$}};
+  \node[box,text width=2.8cm,right=1.1cm of s1] (s2) {$R_z(\theta)A^T\mathbf{r}$\\[-1pt]{\scriptsize giro simple en $z$}};
+  \node[box,fill=orangebg,draw=orangeacc,text width=3.2cm,right=1.1cm of s2] (s3) {$\mathbf{r}'=A\,R_z(\theta)A^T\mathbf{r}$\\[-1pt]{\scriptsize regresa al marco original}};
+  \draw[->,orangeacc,very thick] (r)--(s1) node[midway,above] {\small $A^T$};
+  \draw[->,orangeacc,very thick] (s1)--(s2) node[midway,above] {\small $R_z(\theta)$};
+  \draw[->,orangeacc,very thick] (s2)--(s3) node[midway,above] {\small $A$};
+\end{tikzpicture}
+\caption{Conjugación geométrica: transformar un problema difícil (rotar alrededor de $\hat{\mathbf{n}}$) en uno ya resuelto (rotar alrededor del eje $z$).}
+\label{fig:alineacion}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{7.2 Método 2: Deducción geométrica de la Fórmula de Rodrigues}
+
+Podemos obtener una expresión cerrada mucho más limpia sin usar matrices auxiliares, descomponiendo directamente $\mathbf{r}$ en su proyección paralela y ortogonal al eje unitario $\hat{\mathbf{n}}$:
+\begin{equation}
+  \mathbf{r} = \mathbf{r}_\parallel + \mathbf{r}_\perp, \qquad\text{donde }\;
+  \mathbf{r}_\parallel = (\hat{\mathbf{n}}\cdot\mathbf{r})\hat{\mathbf{n}}
+  \;\text{ y }\;
+  \mathbf{r}_\perp = \mathbf{r} - (\hat{\mathbf{n}}\cdot\mathbf{r})\hat{\mathbf{n}}.
+\end{equation}
+Observemos qué le ocurre a cada componente al girar un ángulo $\theta$ alrededor de $\hat{\mathbf{n}}$:
+\begin{enumerate}
+  \item \textbf{La componente paralela $\mathbf{r}_\parallel$ está sobre el eje de giro}, por lo que permanece intacta: $(\mathbf{r}_\parallel)' = \mathbf{r}_\parallel$.
+  \item \textbf{La componente perpendicular $\mathbf{r}_\perp$ vive en el plano ortogonal a $\hat{\mathbf{n}}$}. Para rotarla un ángulo $\theta$ dentro de ese plano, necesitamos un segundo vector en ese mismo plano, perpendicular a $\mathbf{r}_\perp$ y de su misma longitud. ¡Ese vector es exactamente el producto vectorial $\hat{\mathbf{n}}\times\mathbf{r} = \hat{\mathbf{n}}\times\mathbf{r}_\perp$!
+  \item En el plano generado por la pareja ortogonal $\{\mathbf{r}_\perp,\, \hat{\mathbf{n}}\times\mathbf{r}\}$, el giro 2D de ángulo $\theta$ es simplemente:
+  \[
+    (\mathbf{r}_\perp)' = (\cos\theta)\,\mathbf{r}_\perp + (\sin\theta)\,(\hat{\mathbf{n}}\times\mathbf{r}).
+  \]
+\end{enumerate}
+Sumando ambas partes, $\mathbf{r}' = \mathbf{r}_\parallel + (\mathbf{r}_\perp)'$, y sustituyendo $\mathbf{r}_\perp = \mathbf{r} - (\hat{\mathbf{n}}\cdot\mathbf{r})\hat{\mathbf{n}}$, llegamos al resultado clásico:
+
+\begin{theorembox}{Teorema 7.1 (Fórmula de rotación de Rodrigues — Forma vectorial y matricial)}
+El vector $\mathbf{r}'$ resultante de rotar $\mathbf{r}\in\mathbb{R}^3$ un ángulo $\theta$ alrededor del eje unitario $\hat{\mathbf{n}}$ viene dado por:
+\begin{equation}
+  \mathbf{r}' = \mathbf{r}\cos\theta
+              + (\hat{\mathbf{n}}\times\mathbf{r})\sin\theta
+              + \hat{\mathbf{n}}\,(\hat{\mathbf{n}}\cdot\mathbf{r})(1-\cos\theta).
+\end{equation}
+Definiendo la matriz antisimétrica del producto vectorial $[\hat{\mathbf{n}}]_\times$ tal que $[\hat{\mathbf{n}}]_\times\mathbf{r} = \hat{\mathbf{n}}\times\mathbf{r}$, la matriz de rotación explícita es:
+\begin{equation}
+  R_{\hat{\mathbf{n}}}(\theta) = I + (\sin\theta)[\hat{\mathbf{n}}]_\times + (1-\cos\theta)[\hat{\mathbf{n}}]_\times^2 = \exp\bigl(\theta[\hat{\mathbf{n}}]_\times\bigr),
+  \qquad
+  [\hat{\mathbf{n}}]_\times =
+  \begin{pmatrix}
+    0 & -n_z & n_y \\
+    n_z & 0 & -n_x \\
+    -n_y & n_x & 0
+  \end{pmatrix}.
+\end{equation}
+\end{theorembox}
+
+\begin{figure}[htbp]
+\centering
+\tdplotsetmaincoords{62}{118}
+\begin{tikzpicture}[tdplot_main_coords,>=Stealth,scale=2.6]
+  \def\rr{1.15}
+  \def\hh{0.95}
+  \def\thet{62}
+  \pgfmathsetmacro{\cx}{\rr*cos(\thet)}
+  \pgfmathsetmacro{\cy}{\rr*sin(\thet)}
+
+  % Eje n
+  \draw[orangeacc,ultra thick,->] (0,0,-0.2)--(0,0,1.65) node[above] {$\hat{\mathbf{n}}$};
+
+  % Circunferencia en el plano z = hh
+  \tdplotdrawarc[graymuted,dashed]{(0,0,\hh)}{\rr}{0}{360}{}{}
+
+  % Componente paralela
+  \draw[->,graymuted!90!black,very thick] (0,0,0)--(0,0,\hh)
+    node[midway,left] {\small $\mathbf{r}_\parallel = (\hat{\mathbf{n}}\cdot\mathbf{r})\hat{\mathbf{n}}$};
+
+  % Vectores en el plano de giro (z = hh)
+  \draw[->,blackmain,thick,dashed] (0,0,\hh)--(\rr,0,\hh)
+    node[midway,above left] {\small $\mathbf{r}_\perp$};
+  \draw[->,blackmain,thick] (0,0,\hh)--(0,\rr,\hh)
+    node[right] {\small $\hat{\mathbf{n}}\times\mathbf{r}$};
+  \draw[->,orangeacc,thick,dashed] (0,0,\hh)--(\cx,\cy,\hh)
+    node[midway,below right] {\scriptsize $(\mathbf{r}_\perp)'$};
+
+  % Ángulo recto entre r_perp y n x r
+  \draw[graymuted] (0.15,0,\hh)--(0.15,0.15,\hh)--(0,0.15,\hh);
+
+  % Vectores totales r y r' desde el origen
+  \draw[->,blackmain,very thick] (0,0,0)--(\rr,0,\hh) node[below left] {$\mathbf{r}$};
+  \draw[->,orangeacc,ultra thick] (0,0,0)--(\cx,\cy,\hh) node[above right] {$\mathbf{r}'$};
+
+  % Arco del ángulo theta en el plano z=hh
+  \tdplotdrawarc[->,orangeacc,very thick]{(0,0,\hh)}{0.52}{0}{\thet}{anchor=north}{\small $\theta$}
+\end{tikzpicture}
+\caption{Geometría tridimensional de la fórmula de Rodrigues: el extremo de $\mathbf{r}$ describe un círculo de radio $\|\mathbf{r}_\perp\|$ en el plano perpendicular a $\hat{\mathbf{n}}$ situado a altura $\mathbf{r}_\parallel$. Los vectores $\mathbf{r}_\perp$ y $\hat{\mathbf{n}}\times\mathbf{r}$ forman una base ortogonal de dicho plano.}
+\label{fig:rodrigues}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{7.3 Ejemplo físico-geométrico resuelto}
+
+\begin{examplebox}{Ejemplo 7.2 (Rotación de $180^\circ$ de $\mathbf{e}_x$ alrededor de la recta bisectriz $x=y$)}
+Calculemos la imagen del vector $\mathbf{v}=(1,0,0)$ al girarlo un ángulo $\theta=180^\circ$ ($\pi\text{ rad}$) alrededor del eje dirigido por $\mathbf{n}=(1,1,0)$.
+
+\medskip\noindent
+\textbf{Paso 1 (Normalización del eje):} Como $\|\mathbf{n}\|=\sqrt{1^2+1^2+0^2}=\sqrt{2}$, el vector unitario es
+\[
+  \hat{\mathbf{n}} = \Bigl(\frac{1}{\sqrt{2}},\,\frac{1}{\sqrt{2}},\,0\Bigr).
+\]
+\textbf{Paso 2 (Factores trigonométricos):} $\cos 180^\circ = -1$, $\sin 180^\circ = 0$ y $1-\cos 180^\circ = 2$.
+
+\medskip\noindent
+\textbf{Paso 3 (Productos escalar y vectorial):}
+\[
+  \hat{\mathbf{n}}\cdot\mathbf{v} = \frac{1}{\sqrt{2}}, \qquad
+  \hat{\mathbf{n}}\times\mathbf{v} = \Bigl(0,\,0,\,-\frac{1}{\sqrt{2}}\Bigr).
+\]
+Observa que la componente $z$ de $\hat{\mathbf{n}}\times\mathbf{v}$ es \textbf{negativa}: por la regla de la mano derecha, al iniciar el giro desde $\mathbf{e}_x$, el vector se sumerge inicialmente por debajo del plano $xy$ ($z<0$). En $\theta=180^\circ$, $\sin 180^\circ=0$ y vuelve a emerger en el plano $xy$.
+
+\medskip\noindent
+\textbf{Paso 4 (Evaluación en Rodrigues):}
+\begin{align*}
+  \mathbf{v}' &= \mathbf{v}(-1) + (\hat{\mathbf{n}}\times\mathbf{v})(0) + \hat{\mathbf{n}}\Bigl(\frac{1}{\sqrt{2}}\Bigr)(2) \\
+              &= (-1,0,0) + \sqrt{2}\,\Bigl(\frac{1}{\sqrt{2}},\,\frac{1}{\sqrt{2}},\,0\Bigr) = (-1,0,0) + (1,1,0) = (0,1,0) = \mathbf{e}_y.
+\end{align*}
+\end{examplebox}
+
+\begin{figure}[htbp]
+\centering
+\tdplotsetmaincoords{62}{125}
+\begin{tikzpicture}[tdplot_main_coords,>=Stealth,scale=2.8]
+  \draw[graymuted!70,->] (0,0,0)--(1.45,0,0) node[below left] {$x$};
+  \draw[graymuted!70,->] (0,0,0)--(0,1.45,0) node[below right] {$y$};
+  \draw[graymuted!70,->] (0,0,0)--(0,0,0.85) node[above] {$z$};
+  \draw[graymuted!40,dashed] (0,0,0)--(0,0,-0.8);
+
+  % Eje n en dirección (1,1,0)
+  \draw[orangeacc,dashed,thick] (-0.25,-0.25,0)--(1.3,1.3,0);
+  \draw[->,orangeacc,ultra thick] (0,0,0)--(0.95,0.95,0) node[above right] {$\hat{\mathbf{n}}$};
+
+  % Circunferencia completa de giro en 3D
+  \draw[graymuted,dotted,thick,domain=0:360,samples=72,variable=\q]
+    plot ({0.5+0.5*cos(\q)},{0.5-0.5*cos(\q)},{-0.7071*sin(\q)});
+
+  % Semicircunferencia recorrida por la regla de la mano derecha (z <= 0)
+  \draw[orangeacc,ultra thick,->,domain=0:180,samples=45,variable=\q]
+    plot ({0.5+0.5*cos(\q)},{0.5-0.5*cos(\q)},{-0.7071*sin(\q)});
+
+  % Vectores v y v'
+  \draw[->,blackmain,very thick] (0,0,0)--(1,0,0) node[above left] {$\mathbf{v}=(1,0,0)$};
+  \draw[->,orangeacc,very thick] (0,0,0)--(0,1,0) node[above right] {$\mathbf{v}'=(0,1,0)$};
+
+  % Proyección paralela (punto medio)
+  \draw[graymuted,dashed] (1,0,0)--(0.5,0.5,0)--(0,1,0);
+  \fill[blackmain] (0.5,0.5,0) circle (1.2pt) node[above left] {\scriptsize $\mathbf{v}_\parallel$};
+  \node[orangeacc,below] at (0.5,0.5,-0.72) {\small trayectoria $\theta=180^\circ$ ($z\le 0$)};
+\end{tikzpicture}
+\caption{Rotación de $180^\circ$ de $\mathbf{v}=\mathbf{e}_x$ alrededor del eje $\hat{\mathbf{n}}=\frac{1}{\sqrt{2}}(1,1,0)$. Conforme a la regla de la mano derecha ($\hat{\mathbf{n}}\times\mathbf{v}$ apunta hacia $-z$), el vector describe una semicircunferencia por el semiespacio $z\le 0$ hasta alcanzar $\mathbf{e}_y$.}
+\label{fig:ejemplo180}
+\end{figure}
+\FloatBarrier
+
+% =====================================================================
+\manualsection{8. Transformación pasiva: cambio de sistema de referencia}
+
+Cambiamos ahora de paradigma: el vector geométrico $\mathbf{A}$ está \textbf{clavado en el espacio} (no se mueve), pero el observador gira sus propios ejes coordenados $\{x,y\}$ un ángulo $\phi$ antihorario hasta un nuevo sistema $\{x',y'\}$.
+
+\begin{infobox}[orangeacc]{Pregunta de la transformación pasiva}
+``Si el vector físico $\mathbf{A}$ permanece fijo pero roto mis ejes de referencia un ángulo $\phi$ en sentido antihorario, ¿cómo se calculan las nuevas componentes $(A'_x, A'_y)$ a partir de las viejas $(A_x, A_y)$?''
+\end{infobox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.5]
+  % Ejes originales
+  \draw[graymuted!80,->,thick] (-0.3,0)--(2.3,0) node[right] {$x$};
+  \draw[graymuted!80,->,thick] (0,-0.3)--(0,2.2) node[above] {$y$};
+
+  % Ejes rotados un ángulo phi = 28 grados
+  \def\phiang{28}
+  \def\vang{62}
+  \def\vlen{1.75}
+  \draw[orangeacc,->,thick] (-152:0.3)--(\phiang:2.2) node[right] {$x'$};
+  \draw[orangeacc,->,thick] (-62:0.3)--({\phiang+90}:2.1) node[above left] {$y'$};
+
+  % Arcos de phi
+  \draw[->,orangeacc,thick] (0.65,0) arc (0:\phiang:0.65);
+  \node[orangeacc] at ({\phiang/2}:0.82) {\small $\phi$};
+  \draw[->,orangeacc,thick] (0,0.65) arc (90:{\phiang+90}:0.65);
+  \node[orangeacc] at ({\phiang/2+90}:0.82) {\small $\phi$};
+
+  % Vector fijo A
+  \coordinate (A) at (\vang:\vlen);
+  \draw[->,blackmain,ultra thick] (0,0)--(A) node[above right] {$\mathbf{A}$ (fijo)};
+
+  % Proyecciones en base vieja (gris)
+  \draw[graymuted,dashed,thick] (A) -- ({\vlen*cos(\vang)},0)
+    node[below,blackmain] {\small $A_x$};
+  \draw[graymuted,dashed,thick] (A) -- (0,{\vlen*sin(\vang)})
+    node[left,blackmain] {\small $A_y$};
+
+  % Proyecciones en base nueva (naranja)
+  \pgfmathsetmacro{\Axp}{\vlen*cos(\vang-\phiang)}
+  \pgfmathsetmacro{\Ayp}{\vlen*sin(\vang-\phiang)}
+  \draw[orangeacc,dotted,very thick] (A) -- (\phiang:\Axp)
+    node[below right] {\small $A'_x$};
+  \draw[orangeacc,dotted,very thick] (A) -- ({\phiang+90}:\Ayp)
+    node[above left] {\small $A'_y$};
+\end{tikzpicture}
+\caption{Transformación pasiva: el vector geométrico $\mathbf{A}$ es el mismo objeto en el plano, pero tiene dos pares de coordenadas distintas según se proyecte ortogonalmente sobre la base vieja $\{\hat{\mathbf{e}}_x,\hat{\mathbf{e}}_y\}$ o sobre la base rotada $\{\hat{\mathbf{e}}'_x,\hat{\mathbf{e}}'_y\}$.}
+\label{fig:pasiva}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{8.1 Deducción mediante proyecciones ortogonales}
+
+Como la nueva base $\{\hat{\mathbf{e}}'_x, \hat{\mathbf{e}}'_y\}$ se obtiene aplicando la rotación activa $R(\phi)$ a la base original $\{\hat{\mathbf{e}}_x, \hat{\mathbf{e}}_y\}$, sabemos que:
+\begin{align}
+  \hat{\mathbf{e}}'_x &= \phantom{-}\cos\phi\,\hat{\mathbf{e}}_x + \sin\phi\,\hat{\mathbf{e}}_y, \\
+  \hat{\mathbf{e}}'_y &= -\sin\phi\,\hat{\mathbf{e}}_x + \cos\phi\,\hat{\mathbf{e}}_y.
+\end{align}
+Dado que $\{\hat{\mathbf{e}}'_x, \hat{\mathbf{e}}'_y\}$ es ortonormal, las nuevas componentes de $\mathbf{A} = A_x\hat{\mathbf{e}}_x + A_y\hat{\mathbf{e}}_y$ son simplemente los productos escalares $A'_x = \mathbf{A}\cdot\hat{\mathbf{e}}'_x$ y $A'_y = \mathbf{A}\cdot\hat{\mathbf{e}}'_y$:
+\begin{equation}
+  \begin{pmatrix} A'_x \\ A'_y \end{pmatrix}
+  = \begin{pmatrix} \mathbf{A}\cdot\hat{\mathbf{e}}'_x \\[2pt] \mathbf{A}\cdot\hat{\mathbf{e}}'_y \end{pmatrix}
+  = \underbrace{\begin{pmatrix}
+    \phantom{-}\cos\phi & \sin\phi \\
+    -\sin\phi & \cos\phi
+  \end{pmatrix}}_{S(\phi)}
+  \begin{pmatrix} A_x \\ A_y \end{pmatrix}.
+\end{equation}
+
+% =====================================================================
+\manualsection{9. Dualidad entre transformación activa y pasiva}
+
+Al comparar la matriz activa $R(\phi)$ de la Sección 5 con la matriz de cambio de coordenadas pasiva $S(\phi)$ de la Sección 8:
+\begin{equation}
+  R(\phi)=\begin{pmatrix}\cos\phi & -\sin\phi\\ \sin\phi & \phantom{-}\cos\phi\end{pmatrix},
+  \qquad
+  S(\phi)=\begin{pmatrix}\phantom{-}\cos\phi & \sin\phi\\ -\sin\phi & \cos\phi\end{pmatrix},
+\end{equation}
+observamos que una es la transpuesta (e inversa) de la otra:
+\begin{equation}
+  S(\phi) = R(\phi)^T = R(\phi)^{-1} = R(-\phi).
+\end{equation}
+
+\begin{infobox}[blackmain]{Principio de equivalencia activa-pasiva}
+Girar físicamente un vector un ángulo $+\theta$ hacia la izquierda respecto a unos ejes fijos (\textbf{punto de vista activo}) produce exactamente las mismas coordenadas numéricas que dejar el vector inmóvil y girar los ejes coordenados un ángulo $-\theta$ hacia la derecha (\textbf{punto de vista pasivo}).
+\end{infobox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.08]
+  % Panel izquierdo: Activa
+  \begin{scope}
+    \node[blackmain,font=\small\bfseries] at (0,2.2) {Transformación Activa ($+\theta$)};
+    \draw[graymuted,->] (-1.3,0)--(1.8,0) node[right] {\small $x$};
+    \draw[graymuted,->] (0,-1.2)--(0,1.8) node[above] {\small $y$};
+    \draw[->,graymuted,dashed,thick] (0,0)--(20:1.4) node[right] {\small $\mathbf{v}$};
+    \draw[->,orangeacc,ultra thick] (0,0)--(55:1.4) node[above right] {\small $R(\theta)\mathbf{v}$};
+    \draw[->,orangeacc,thick] (20:0.75) arc (20:55:0.75);
+    \node[orangeacc] at (37.5:1.0) {\small $+\theta$};
+    \node[blackmain] at (0,-1.65) {\footnotesize El vector gira $+\theta$; los ejes no se mueven};
+  \end{scope}
+
+  % Equivalencia central
+  \begin{scope}[xshift=4.8cm]
+    \node[orangeacc] at (0,0.4) {\LARGE $\Longleftrightarrow$};
+    \node[blackmain,align=center,font=\footnotesize] at (0,-0.3)
+      {Idéntico ángulo $55^\circ$\\[-1pt] respecto a los ejes\\[-1pt] de medición};
+  \end{scope}
+
+  % Panel derecho: Pasiva
+  \begin{scope}[xshift=9.6cm]
+    \node[blackmain,font=\small\bfseries] at (0,2.2) {Transformación Pasiva ($-\theta$)};
+    \draw[graymuted!60,dashed,->] (-1.3,0)--(1.8,0) node[right] {\scriptsize $x$};
+    \draw[graymuted!60,dashed,->] (0,-1.2)--(0,1.8) node[above] {\scriptsize $y$};
+    \draw[orangeacc,->,thick] (-35:-1.2)--(-35:1.8) node[below right] {\small $x'$};
+    \draw[orangeacc,->,thick] (55:-1.2)--(55:1.8) node[above right] {\small $y'$};
+    \draw[->,blackmain,ultra thick] (0,0)--(20:1.4) node[right] {\small $\mathbf{v}$ (fijo)};
+    \draw[->,orangeacc,thick] (0:0.75) arc (0:-35:0.75);
+    \node[orangeacc] at (-17.5:1.02) {\small $-\theta$};
+    \node[blackmain] at (0,-1.65) {\footnotesize Los ejes giran $-\theta$; el vector no se mueve};
+  \end{scope}
+\end{tikzpicture}
+\caption{Dualidad geométrica: en ambos escenarios, el vector termina formando un ángulo de $55^\circ$ con el eje horizontal de referencia ($x$ en el caso activo, $x'$ en el caso pasivo).}
+\label{fig:activa-pasiva}
+\end{figure}
+\FloatBarrier
+
+% =====================================================================
+\manualsection{10. El subgrupo de las traslaciones}
+
+Estudiemos ahora la segunda pieza del Teorema 1.2: los desplazamientos puros sin rotación.
+
+\begin{infobox}[orangeacc]{Definición 10.1 (Traslación en $\mathbb{E}^n$)}
+Dado un vector fijo $\mathbf{a}\in\mathbb{R}^n$, la \term{traslación} por $\mathbf{a}$ es la aplicación $T_{\mathbf{a}}:\mathbb{E}^n\to\mathbb{E}^n$ definida por:
+\begin{equation}
+  T_{\mathbf{a}}(p) = p + \mathbf{a}.
+\end{equation}
+Si $\mathbf{a}\neq\mathbf{0}$, la traslación $T_{\mathbf{a}}$ \textbf{no tiene puntos fijos} en todo $\mathbb{E}^n$.
+\end{infobox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.2]
+  \coordinate (A) at (0,0);
+  \coordinate (B) at (1.7,0.2);
+  \coordinate (C) at (0.4,1.35);
+  \coordinate (a) at (2.6,0.85);
+
+  \fill[orangebg] (A)--(B)--(C)--cycle;
+  \draw[blackmain,thick] (A)--(B)--(C)--cycle;
+  \fill[blackmain] (A) circle (1.8pt) node[below left] {\small $p$};
+  \fill[blackmain] (B) circle (1.8pt) node[below right] {\small $q$};
+  \fill[blackmain] (C) circle (1.8pt) node[above left] {\small $r$};
+
+  % Vectores de traslación paralelos y congruentes
+  \draw[->,orangeacc,very thick] (A) -- ($(A)+(a)$) node[midway,below right] {\small $\mathbf{a}$};
+  \draw[->,orangeacc!70,dashed,thick] (B) -- ($(B)+(a)$) node[midway,below right] {\scriptsize $\mathbf{a}$};
+  \draw[->,orangeacc!70,dashed,thick] (C) -- ($(C)+(a)$) node[midway,above left] {\scriptsize $\mathbf{a}$};
+
+  \begin{scope}[shift={(a)}]
+    \fill[orangeacc!18] (A)--(B)--(C)--cycle;
+    \draw[orangeacc,very thick] (A)--(B)--(C)--cycle;
+    \fill[blackmain] (A) circle (1.8pt) node[below right] {\small $p+\mathbf{a}$};
+    \fill[blackmain] (B) circle (1.8pt) node[right] {\small $q+\mathbf{a}$};
+    \fill[blackmain] (C) circle (1.8pt) node[above] {\small $r+\mathbf{a}$};
+  \end{scope}
+\end{tikzpicture}
+\caption{Una traslación $T_{\mathbf{a}}$ es un campo vectorial constante: desplaza cada punto del espacio mediante el mismo vector equipolente $\mathbf{a}$, preservando el paralelismo de todos los segmentos.}
+\label{fig:traslacion}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{10.1 Propiedades algebraicas: un subgrupo normal abeliano}
+
+La aplicación $\mathbf{a}\mapsto T_{\mathbf{a}}$ es un isomorfismo de grupos entre $(\mathbb{R}^n,+)$ y el conjunto $\mathcal{T}(n)$ de todas las traslaciones:
+\begin{itemize}
+  \item \term{Clausura y conmutatividad}: $T_{\mathbf{a}}\circ T_{\mathbf{b}} = T_{\mathbf{a}+\mathbf{b}} = T_{\mathbf{b}+\mathbf{a}} = T_{\mathbf{b}}\circ T_{\mathbf{a}}$.
+  \item \term{Identidad e inversa}: $T_{\mathbf{0}} = \mathrm{Id}$ \quad y \quad $(T_{\mathbf{a}})^{-1} = T_{-\mathbf{a}}$.
+  \item \term{Normalidad en $E(n)$}: Si conjugamos una traslación $T_{\mathbf{a}}$ por cualquier transformación ortogonal $C\in O(n)$, obtenemos otra traslación (cuyo vector ha sido rotado por $C$):
+  \begin{equation}\label{eq:conjugacion-traslacion}
+    (C\circ T_{\mathbf{a}}\circ C^{-1})(p) = C\bigl(C^{-1}p + \mathbf{a}\bigr) = p + C\mathbf{a} = T_{C\mathbf{a}}(p).
+  \end{equation}
+  Esta identidad fundamental $C\,T_{\mathbf{a}}\,C^{-1} = T_{C\mathbf{a}}$ prueba que $\mathcal{T}(n)\trianglelefteq E(n)$ es un \term{subgrupo normal} y será nuestra herramienta maestra en la Sección 11.
+\end{itemize}
+
+% =====================================================================
+\manualsection{11. Generadores de un grupo y economía de movimientos}
+
+Aunque un grupo tenga muchos —o infinitos— elementos, no necesitamos almacenarlos todos: basta un subconjunto mínimo de ``ladrillos elementales'' (llamados \term{generadores}) que, al multiplicarse repetidamente entre sí, reconstruyen el grupo completo. En ingeniería mecánica y robótica esto se traduce en una pregunta práctica: \emph{¿cuál es el número mínimo de motores o actuadores capaces de producir cualquier orientación o posición en el espacio?}
+
+\begin{infobox}[orangeacc]{Definición 11.1 (Conjunto generador y rango $d(G)$)}
+Sea $G$ un grupo y $S\subseteq G$ un subconjunto. El \term{subgrupo generado por $S$}, denotado $\langle S\rangle$, es el conjunto de todos los productos finitos de elementos de $S$ y sus inversos. Si $G=\langle S\rangle$, decimos que $S$ \term{genera} $G$. El \term{número mínimo de generadores} $d(G)$ es el menor cardinal de un subconjunto generador de $G$.
+\end{infobox}
+
+\textbf{Observación clave:} El tamaño del grupo $|G|$ y su número mínimo de generadores $d(G)$ son cantidades independientes. Por ejemplo, el grupo simétrico $S_n$ tiene $n!$ elementos (para $n=10$ son $3\,628\,800$ permutaciones), pero se genera con \textbf{sólo $2$ permutaciones}: una transposición $(1\,2)$ y el ciclo largo $(1\,2\,\cdots\,n)$.
+
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lccl@{}}
+  \toprule
+  \textbf{Grupo $G$} & \textbf{Orden $|G|$} & \textbf{Mínimo $d(G)$} & \textbf{Conjunto generador mínimo típico} \\
+  \midrule
+  Cíclico $\mathbb{Z}_n$ & $n$ & $1$ & $\{1\}$ (rotación de $2\pi/n$) \\
+  Klein $\mathbb{Z}_2\times\mathbb{Z}_2$ & $4$ & $2$ & $\{(1,0),\,(0,1)\}$ (dos reflexiones perpendiculares) \\
+  Diédrico $D_n$ ($n\ge 3$) & $2n$ & $2$ & $\{r,\,s\}$ (una rotación de $2\pi/n$ y una reflexión) \\
+  Simétrico $S_n$ ($n\ge 3$) & $n!$ & $2$ & $\{(1\,2),\,(1\,2\,\cdots\,n)\}$ \\
+  Alternante $A_n$ ($n\ge 3$) & $n!/2$ & $2$ & $\{(1\,2\,3),\,(1\,2\,\cdots\,n)\}$ (o $(2\,3\,\cdots\,n)$ si $n$ es par) \\
+  \midrule
+  Rotaciones 2D: $SO(2)$ & $\infty$ (dim $1$) & $1$ familia & $\{R(\theta)\}_{\theta\in\mathbb{R}}$ \quad (generador infinitesimal $J$) \\
+  Rotaciones 3D: $SO(3)$ & $\infty$ (dim $3$) & $2$ familias & $\{R_y(\beta),\,R_z(\alpha)\}$ \quad (ángulos de Euler $z$-$y$-$z$) \\
+  Euclídeo propio: $SE(3)$ & $\infty$ (dim $6$) & $3$ familias & $\{T_{t\mathbf{e}_x},\,R_y(\beta),\,R_z(\alpha)\}$ \\
+  \bottomrule
+\end{tabular}
+\caption{Comparación entre el orden del grupo $|G|$ y su número mínimo de generadores $d(G)$.}
+\label{tab:generadores}
+\end{table}
+\FloatBarrier
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.1]
+  % Grafo de Cayley de Z_6
+  \begin{scope}
+    \foreach \i in {0,1,2,3,4,5} {
+      \coordinate (P\i) at ({1.25*cos(60*\i+90)},{1.25*sin(60*\i+90)});
+    }
+    \foreach \i in {0,1,2,3,4,5} {
+      \pgfmathtruncatemacro{\j}{mod(\i+1,6)}
+      \draw[->,orangeacc,very thick] (P\i) -- (P\j);
+    }
+    \foreach \i in {0,1,2,3,4,5} {
+      \fill[blackmain] (P\i) circle (2.2pt);
+    }
+    \node[blackmain,font=\small\bfseries] at (0,-1.85) {$\mathbb{Z}_6 = \langle r \rangle$};
+    \node[graymuted,font=\footnotesize] at (0,-2.25) {Orden $6$, \quad $d(\mathbb{Z}_6)=1$ generador};
+  \end{scope}
+
+  % Grafo de Cayley de D_3
+  \begin{scope}[xshift=6.0cm]
+    \foreach \i in {0,1,2} {
+      \coordinate (I\i) at ({0.65*cos(120*\i+90)},{0.65*sin(120*\i+90)});
+      \coordinate (O\i) at ({1.4*cos(120*\i+90)},{1.4*sin(120*\i+90)});
+    }
+    \foreach \i in {0,1,2} {
+      \pgfmathtruncatemacro{\j}{mod(\i+1,3)}
+      \draw[->,orangeacc,very thick] (O\i) -- (O\j);
+      \draw[->,orangeacc,very thick] (I\j) -- (I\i);
+    }
+    \foreach \i in {0,1,2} {
+      \draw[<->,blackmain,thick,dashed] (I\i) -- (O\i);
+    }
+    \foreach \i in {0,1,2} {
+      \fill[blackmain] (I\i) circle (2.2pt);
+      \fill[blackmain] (O\i) circle (2.2pt);
+    }
+    \node[blackmain,font=\small\bfseries] at (0,-1.85) {$D_3 = \langle r, s \rangle$};
+    \node[graymuted,font=\footnotesize] at (0,-2.25) {Orden $6$, \quad $d(D_3)=2$ generadores};
+  \end{scope}
+\end{tikzpicture}
+\caption{Grafos de Cayley de los dos únicos grupos de orden $6$ (salvo isomorfismo). En $\mathbb{Z}_6$ un solo tipo de flecha (naranja: rotación $r$ de $60^\circ$) recorre los $6$ elementos. En $D_3$ (simetrías del triángulo equilátero) la rotación $r$ de $120^\circ$ sólo recorre $3$ elementos; es indispensable un segundo generador $s$ (flecha punteada negra: reflexión) para saltar al otro ciclo.}
+\label{fig:d}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{11.1 Generador infinitesimal de $SO(2)$: la matriz $J$}
+
+En los grupos continuos (grupos de Lie), las familias uniparamétricas nacen de \term{generadores infinitesimales} mediante la exponencial matricial. En $SO(2)$, derivando $R(\theta)$ en $\theta=0$ obtenemos la matriz antisimétrica:
+\begin{equation}
+  J = \left.\frac{d R(\theta)}{d\theta}\right|_{\theta=0} = \begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}, \qquad\text{que cumple }\; J^2 = -I.
+\end{equation}
+Observa que $J$ se comporta algebraicamente igual que la unidad imaginaria $i=\sqrt{-1}$. Al expandir en serie de Taylor la exponencial matricial $e^{\theta J} = \sum_{k=0}^\infty \frac{\theta^k}{k!}J^k$ y agrupar potencias pares ($J^{2m}=(-1)^m I$) e impares ($J^{2m+1}=(-1)^m J$), recuperamos todo el grupo $SO(2)$ a partir de una sola matriz:
+\begin{equation}
+  R(\theta) = \exp(\theta J) = (\cos\theta)\,I + (\sin\theta)\,J
+  = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \phantom{-}\cos\theta \end{pmatrix}.
+\end{equation}
+
+\manualsubsection{11.2 Generación de $SO(3)$ con sólo dos ejes: Ángulos de Euler y Conjugación}
+
+Aunque el espacio 3D tiene tres ejes coordenados ($x,y,z$), \textbf{no necesitamos tres motores independientes} para alcanzar cualquier orientación tridimensional: bastan \textbf{dos ejes ortogonales}, por ejemplo $R_y$ y $R_z$.
+
+¿Cómo es posible producir un giro $R_x(\alpha)$ alrededor del eje $x$ si sólo disponemos de giros alrededor de $y$ y de $z$? Mediante \term{conjugación}:
+\begin{equation}
+  R_x(\alpha) = R_z\Bigl(-\frac{\pi}{2}\Bigr)\, R_y(\alpha)\, R_z\Bigl(\frac{\pi}{2}\Bigr).
+\end{equation}
+\textbf{Lectura física paso a paso (de derecha a izquierda):}
+\begin{enumerate}
+  \item $R_z(+\pi/2)$ gira el espacio $90^\circ$ alrededor de $z$, llevando el eje $+x$ a ocupar la posición del eje $+y$.
+  \item $R_y(\alpha)$ aplica el giro deseado de ángulo $\alpha$ alrededor del eje $+y$ (donde ahora reside momentáneamente nuestro eje $x$ del objeto).
+  \item $R_z(-\pi/2)$ devuelve el eje a su posición original $+x$. ¡El objeto ha quedado rotado un ángulo $\alpha$ alrededor del eje $x$!
+\end{enumerate}
+Más aún, el teorema de los \term{ángulos de Euler ($z$-$y$-$z$)} garantiza que cualquier matriz $R\in SO(3)$ se factoriza como producto de tres giros usando únicamente las familias $R_y$ y $R_z$:
+\begin{equation}
+  R = R_z(\alpha)\,R_y(\beta)\,R_z(\gamma), \qquad\text{por lo que }\; SO(3) = \bigl\langle \{R_y(\beta),\,R_z(\alpha)\} \bigr\rangle.
+\end{equation}
+A nivel infinitesimal (en el álgebra de Lie $\mathfrak{so}(3)$), esto refleja el \emph{conmutador} (corchete de Lie) de los generadores infinitesimales: $[J_y, J_z] = J_y J_z - J_z J_y = J_x$.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,
+  box/.style={draw=blackmain,rounded corners=2pt,fill=creambg,thick,
+    align=center,inner sep=4.5pt,font=\small}]
+  \node[box] (s) {Objetivo:\\[-1pt]{\scriptsize fabricar $R_x(\alpha)$}};
+  \node[box,right=0.85cm of s] (a) {1. Aplicar $R_z(\pi/2)$\\[-1pt]{\scriptsize lleva eje $x \mapsto y$}};
+  \node[box,right=0.85cm of a] (b) {2. Aplicar $R_y(\alpha)$\\[-1pt]{\scriptsize gira $\alpha$ en eje $y$}};
+  \node[box,fill=orangebg,draw=orangeacc,right=0.85cm of b] (c) {3. Aplicar $R_z(-\pi/2)$\\[-1pt]{\scriptsize regresa $y \mapsto x$}};
+  \draw[->,orangeacc,very thick] (s)--(a);
+  \draw[->,orangeacc,very thick] (a)--(b);
+  \draw[->,orangeacc,very thick] (b)--(c);
+\end{tikzpicture}
+\caption{Síntesis de $R_x(\alpha) = R_z(-\pi/2)R_y(\alpha)R_z(\pi/2)$ usando exclusivamente rotaciones en $y$ y $z$.}
+\label{fig:conjugacion}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{11.3 Subgrupos finitos de $SO(3)$: los grupos poliédricos}
+
+Un resultado clásico establece que todo subgrupo finito de rotaciones en 3D es un grupo cíclico $C_n$, un grupo diédrico $D_n$, o bien el grupo de rotaciones de uno de los \term{sólidos platónicos} (todos ellos generados por tan sólo $d(G)=2$ elementos $A$ y $B$):
+\begin{itemize}
+  \item \term{Grupo tetraédrico} $T \cong A_4$ (orden $12$): generado por un giro $A$ de $180^\circ$ (orden $2$) que pasa por los puntos medios de dos aristas opuestas, y un giro $B$ de $120^\circ$ (orden $3$) que pasa por un vértice y el centro de la cara opuesta.
+  \item \term{Grupo octaédrico/cúbico} $O \cong S_4$ (orden $24$): generado por un giro de $90^\circ$ (orden $4$) y uno de $120^\circ$ (orden $3$).
+  \item \term{Grupo icosaédrico} $I \cong A_5$ (orden $60$): generado por un giro de $180^\circ$ (orden $2$) y uno de $72^\circ$ (orden $5$).
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\tdplotsetmaincoords{68}{112}
+\begin{tikzpicture}[tdplot_main_coords,>=Stealth,scale=1.85]
+  % Vértices de un tetraedro regular centrado en el origen
+  \coordinate (V1) at (0,0,1.25);
+  \coordinate (V2) at (1.18,0,-0.42);
+  \coordinate (V3) at (-0.59,1.02,-0.42);
+  \coordinate (V4) at (-0.59,-1.02,-0.42);
+
+  % Caras sombreadas
+  \fill[orangebg,opacity=0.55] (V1)--(V2)--(V3)--cycle;
+  \fill[orangeacc!18,opacity=0.65] (V1)--(V2)--(V4)--cycle;
+
+  % Aristas traseras y delanteras
+  \draw[graymuted,dashed,thick] (V3)--(V4);
+  \draw[blackmain,very thick] (V1)--(V2) (V1)--(V3) (V1)--(V4) (V2)--(V3) (V2)--(V4);
+
+  % Eje B de 120 grados (V1 al centro de la cara opuesta)
+  \coordinate (Gbase) at (0,0,-0.42);
+  \draw[orangeacc,ultra thick,->] (0,0,-0.95) -- (0,0,1.85)
+    node[above] {\small Eje $B$ ($120^\circ$, orden $3$)};
+  \fill[orangeacc] (V1) circle (1.5pt);
+  \fill[orangeacc] (Gbase) circle (1.5pt);
+
+  % Eje A de 180 grados (punto medio V1-V2 a punto medio V3-V4)
+  \coordinate (M12) at ($(V1)!0.5!(V2)$);
+  \coordinate (M34) at ($(V3)!0.5!(V4)$);
+  \draw[blackmain!85!orangeacc,very thick,<->] ($(M34)!-0.35!(M12)$) -- ($(M34)!1.45!(M12)$)
+    node[below right] {\small Eje $A$ ($180^\circ$, orden $2$)};
+  \fill[blackmain] (M12) circle (1.5pt);
+  \fill[blackmain] (M34) circle (1.5pt);
+\end{tikzpicture}
+\caption{El grupo de rotaciones propias del tetraedro regular ($A_4$, orden $12$) queda generado íntegramente por dos rotaciones: $B$ de $120^\circ$ alrededor de un eje vértice-cara y $A$ de $180^\circ$ alrededor de un eje que une los puntos medios de dos aristas opuestas.}
+\label{fig:tetraedro}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{11.4 Generación de todo el grupo euclídeo $SE(3)$ con tres familias}
+
+Finalmente, ¿cuántas familias uniparamétricas bastan para generar todos los movimientos rígidos propios $SE(3) = \mathbb{R}^3\rtimes SO(3)$? Bastan \textbf{tres}: las dos rotaciones $\{R_y(\beta),\,R_z(\alpha)\}$ y \textbf{una sola dirección de traslación}, digamos $T_{t\mathbf{e}_x}$.
+
+En efecto, aplicando la fórmula de conjugación \eqref{eq:conjugacion-traslacion} ($C\,T_{\mathbf{a}}\,C^{-1} = T_{C\mathbf{a}}$), podemos rotar el vector de traslación $\mathbf{e}_x$ hacia los ejes $y$ y $z$:
+\begin{align}
+  \text{Como } R_z\Bigl(\frac{\pi}{2}\Bigr)\mathbf{e}_x = \mathbf{e}_y &\implies
+  T_{t\mathbf{e}_y} = R_z\Bigl(\frac{\pi}{2}\Bigr)\, T_{t\mathbf{e}_x}\, R_z\Bigl(-\frac{\pi}{2}\Bigr), \\[4pt]
+  \text{Como } R_y\Bigl(-\frac{\pi}{2}\Bigr)\mathbf{e}_x = \mathbf{e}_z &\implies
+  T_{t\mathbf{e}_z} = R_y\Bigl(-\frac{\pi}{2}\Bigr)\, T_{t\mathbf{e}_x}\, R_y\Bigl(\frac{\pi}{2}\Bigr).
+\end{align}
+(Nota cómo en el segundo caso el ángulo debe ser $-\pi/2$, puesto que $R_y(\theta)\mathbf{e}_x = \cos\theta\,\mathbf{e}_x - \sin\theta\,\mathbf{e}_z$). En términos cotidianos: \emph{un automóvil o un avión que sólo puede avanzar hacia adelante ($T_{t\mathbf{e}_x}$), pero que puede girar su dirección ($R_y, R_z$), puede desplazarse a cualquier punto $(x,y,z)$ del espacio tridimensional}.
+
+% =====================================================================
+\manualsection{12.Cuadro resumen}
+\begin{table}[htbp]
+\centering
+\renewcommand{\arraystretch}{1.4}
+\small
+\begin{tabular}{@{}lll@{}}
+  \toprule
+  \textbf{Concepto / Objeto} & \textbf{Invariante geométrico} & \textbf{Caracterización algebraica / Fórmula} \\
+  \midrule
+  Isometría $F:\mathbb{E}^n\to\mathbb{E}^n$ & Distancia $d(F(p),F(q))=d(p,q)$ & $F(p)=Cp+\mathbf{a}$, \quad $E(n)\cong\mathbb{R}^n\rtimes O(n)$ \\
+  Diferencial $dF_p$ & Producto escalar, $\kappa$, $|\tau|$ & $dF_p(v_p)=(Cv)_{F(p)}$, \quad $\bar\tau = (\det C)\tau$ \\
+  Transformación ortogonal & Producto punto y origen $\mathbf{0}$ & $C\in O(n) \iff C^TC=I \iff \det C=\pm 1$ \\
+  Rotación propia $R$ & Producto punto y orientación & $R\in SO(n)=\ker(\det) \iff R^TR=I,\;\det R=+1$ \\
+  Traslación $T_{\mathbf{a}}$ & Paralelismo, orientación & $T_{\mathbf{a}}(p)=p+\mathbf{a}$, \quad $\mathcal{T}(n)\cong(\mathbb{R}^n,+)\trianglelefteq E(n)$ \\
+  \midrule
+  Rotación activa vs.\ pasiva & Coordenadas relativas al marco & Activa: $R(\phi)$, \quad Pasiva: $S(\phi)=R(\phi)^T=R(-\phi)$ \\
+  Fórmula de Rodrigues & Eje invariante $\hat{\mathbf{n}}$ ($\|\hat{\mathbf{n}}\|=1$) & $\mathbf{r}'=\mathbf{r}\cos\theta+(\hat{\mathbf{n}}\times\mathbf{r})\sin\theta+\hat{\mathbf{n}}(\hat{\mathbf{n}}\cdot\mathbf{r})(1-\cos\theta)$ \\
+  Forma exponencial 3D & Eje $\hat{\mathbf{n}}$ y ángulo $\theta$ & $R_{\hat{\mathbf{n}}}(\theta) = \exp(\theta[\hat{\mathbf{n}}]_\times) = I + \sin\theta[\hat{\mathbf{n}}]_\times + (1-\cos\theta)[\hat{\mathbf{n}}]_\times^2$ \\
+  \midrule
+  Acción de grupo $G\curvearrowright X$ & Partición en órbitas & $|\mathrm{Orb}(x)|\cdot|\mathrm{Stab}(x)| = |G|$ \quad (Lagrange) \\
+  Generador de $SO(2)$ & Círculo de rotaciones $S^1$ & $R(\theta)=e^{\theta J}=I\cos\theta+J\sin\theta$, \quad $J^2=-I$ \\
+  Generadores de $SO(3)$ & Todas las orientaciones 3D & $2$ familias $\{R_y,R_z\}$: $R_x(\alpha)=R_z(-\frac{\pi}{2})R_y(\alpha)R_z(\frac{\pi}{2})$ \\
+  Generadores de $SE(3)$ & Todo movimiento rígido 3D & $3$ familias $\{T_{t\mathbf{e}_x},R_y,R_z\}$: $T_{t\mathbf{e}_z}=R_y(-\frac{\pi}{2})T_{t\mathbf{e}_x}R_y(\frac{\pi}{2})$ \\
+  \bottomrule
+\end{tabular}
+\caption{Cuadro sinóptico de la geometría euclídea y sus grupos de transformaciones.}
+\label{tab:resumen}
+\end{table}
+
+\end{document}
