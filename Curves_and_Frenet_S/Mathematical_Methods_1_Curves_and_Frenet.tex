@@ -1,0 +1,724 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,babel}
+\usepackage{placeins}
+\usepackage{needspace}
+\usepackage{bm}
+
+% ============ PALETA: NEGRO, NARANJA Y CREMA ============
+\definecolor{blackmain}{HTML}{1A1A1A}
+\definecolor{orangeacc}{HTML}{E65C00}
+\definecolor{creambg}{HTML}{FBF8F1}
+\definecolor{orangebg}{HTML}{FFF4EB}
+\definecolor{graymuted}{HTML}{7A746E}
+\definecolor{pureblack}{HTML}{0D0D0D}
+
+% ============ CABECERAS Y PIES ============
+\setlength{\headheight}{24pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{blackmain}{\textbf{\small Métodos Matemáticos I}}}
+\fancyhead[R]{\textcolor{orangeacc}{\textbf{\small Curvas y Triedro de Frenet--Serret}}}
+\fancyfoot[C]{\textcolor{graymuted}{\thepage}}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{orangeacc}\leaders\hrule height \headrulewidth\hfill}}
+
+\setlist[itemize]{label={\small\textcolor{orangeacc}{$\blacksquare$}},leftmargin=1.6em}
+\setlist[enumerate]{label={\textcolor{orangeacc}{\arabic*.}},leftmargin=1.8em}
+
+% ============ TÍTULOS ============
+\newcommand{\manualsection}[1]{%
+  \Needspace{8\baselineskip}%
+  \vspace{0.35cm}
+  \par\noindent{\Large\bfseries\color{blackmain} #1}\par\nobreak
+  \noindent{\color{orangeacc}\rule{\linewidth}{1.4pt}}\par\nobreak
+  \vspace{0.15cm}
+}
+
+\newcommand{\manualsubsection}[1]{%
+  \Needspace{5\baselineskip}%
+  \par\vspace{0.2cm}\noindent{\bfseries\color{orangeacc} #1}\par\nobreak
+  \vspace{0.12cm}
+}
+
+% ============ CAJAS DE CONTENIDO ============
+\newtcolorbox{infobox}[2][orangeacc]{
+  enhanced,breakable,
+  colback=creambg,colframe=#1!90!black,
+  boxrule=1pt,arc=2mm,
+  left=9pt,right=9pt,top=8pt,bottom=8pt,
+  before upper={\textbf{\color{#1!95!black}\large #2}\par\nobreak
+    {\color{#1!50}\rule{\linewidth}{0.6pt}}\par\nobreak\smallskip}
+}
+
+\newtcolorbox{examplebox}[1]{
+  enhanced,breakable,
+  colback=orangebg,colframe=orangeacc!85!black,
+  boxrule=1pt,arc=2mm,
+  left=9pt,right=9pt,top=8pt,bottom=8pt,
+  before upper={\textbf{\color{orangeacc!95!black}\large #1}\par\nobreak
+    {\color{orangeacc!40}\rule{\linewidth}{0.6pt}}\par\nobreak\smallskip}
+}
+
+\newtcolorbox{theorembox}[1]{
+  enhanced,breakable,
+  colback=creambg!70!white,colframe=pureblack,
+  boxrule=1.1pt,arc=2mm,
+  left=9pt,right=9pt,top=8pt,bottom=8pt,
+  before upper={\textbf{\color{pureblack}\large #1}\par\nobreak
+    {\color{orangeacc}\rule{\linewidth}{0.8pt}}\par\nobreak\smallskip}
+}
+
+\newcommand{\term}[1]{\textbf{\color{orangeacc}#1}}
+\newcommand{\termb}[1]{\textbf{\color{blackmain}#1}}
+\renewcommand{\familydefault}{\rmdefault}
+\tikzset{every node/.append style={font=\rmfamily}}
+
+% ============ MACROS TIKZ PARA HÉLICES (proyección oblicua) ============
+% Hélice 3D (a cos t, a sin t, b t) con eje vertical. Proyección:
+%   pantalla = ( X , Z + k*Y ),  k = razón de profundidad (Y apunta al fondo).
+% Así el triedro dibujado es la proyección EXACTA del triedro de Frenet:
+%   T = (-a sin t, a cos t, b)/c,  N = (-cos t, -sin t, 0),
+%   B = ( b sin t, -b cos t, a)/c, c = sqrt(a^2+b^2).
+% Argumentos: #1=a  #2=b  #3=k  #4=t (grados)  #5=y0  #6=longitud L
+\newcommand{\helixpt}[5]{%
+  \pgfmathsetmacro{\hx}{#1*cos(#4)}%
+  \pgfmathsetmacro{\hy}{#5+#2*#4*pi/180+#3*#1*sin(#4)}}
+
+\newcommand{\helixB}[6]{%
+  \begingroup
+  \helixpt{#1}{#2}{#3}{#4}{#5}%
+  \pgfmathsetmacro{\cc}{sqrt(#1*#1+#2*#2)}%
+  \pgfmathsetmacro{\Bx}{#6*#2*sin(#4)/\cc}%
+  \pgfmathsetmacro{\By}{#6*(#1-#3*#2*cos(#4))/\cc}%
+  \fill[blackmain] (\hx,\hy) circle (1.6pt);
+  \draw[->,blackmain,very thick] (\hx,\hy) -- ++(\Bx,\By);
+  \endgroup}
+
+\newcommand{\helixframe}[6]{%
+  \begingroup
+  \helixpt{#1}{#2}{#3}{#4}{#5}%
+  \pgfmathsetmacro{\cc}{sqrt(#1*#1+#2*#2)}%
+  \pgfmathsetmacro{\Tx}{-#6*#1*sin(#4)/\cc}%
+  \pgfmathsetmacro{\Ty}{#6*(#2+#3*#1*cos(#4))/\cc}%
+  \pgfmathsetmacro{\Nx}{-#6*cos(#4)}%
+  \pgfmathsetmacro{\Ny}{-#6*#3*sin(#4)}%
+  \pgfmathsetmacro{\Bx}{#6*#2*sin(#4)/\cc}%
+  \pgfmathsetmacro{\By}{#6*(#1-#3*#2*cos(#4))/\cc}%
+  \fill[blackmain] (\hx,\hy) circle (2pt);
+  \draw[->,blackmain,very thick] (\hx,\hy) -- ++(\Tx,\Ty) node[right] {$\mathbf{T}$};
+  \draw[->,blackmain,very thick] (\hx,\hy) -- ++(\Nx,\Ny) node[left] {$\mathbf{N}$};
+  \draw[->,blackmain,very thick] (\hx,\hy) -- ++(\Bx,\By) node[above] {$\mathbf{B}$};
+  \endgroup}
+
+\begin{document}
+\color{blackmain}
+
+\begin{center}
+  {\LARGE\textbf{\color{blackmain}Curvas y Triedro de Frenet--Serret}}\\[0.2cm]
+  {\Large\textcolor{orangeacc}{\textbf{Geometría local de curvas en $\mathbb{R}^3$}}}\\[0.4cm]
+  {\large\textcolor{graymuted}{Un marco móvil que viaja con la curva}}\\[0.35cm]
+\end{center}
+
+% =====================================================================
+\manualsection{1. La idea: un marco que viaja con la curva}
+
+Para estudiar la forma de una curva $\alpha:I\to\mathbb{R}^3$ lo mejor
+no es mirarla desde fuera, sino \emph{viajar sobre ella} con una pequeña
+base ortonormal que cambie de orientación a medida que avanzamos. En cada
+punto tendremos tres direcciones privilegiadas:
+
+\begin{itemize}
+  \item hacia dónde \emph{vamos} (la \term{tangente} $\mathbf{T}$);
+  \item hacia dónde \emph{giramos} (la \term{normal principal} $\mathbf{N}$);
+  \item hacia dónde \emph{dejamos el plano} (la \term{binormal} $\mathbf{B}$).
+\end{itemize}
+
+Estas tres direcciones forman el \term{triedro de Frenet}. Las fórmulas de
+Frenet--Serret dicen exactamente cómo cambian cuando nos desplazamos a lo
+largo de $\alpha$, y revelan que la forma de la curva queda codificada en
+sólo dos funciones: la \term{curvatura} $\kappa$ y la \term{torsión} $\tau$.
+
+% =====================================================================
+\manualsection{2. El triedro de Frenet--Serret}
+
+Suponemos primero que $\alpha$ está parametrizada por \emph{longitud de
+arco} $s$, es decir, $\|\alpha'(s)\|=1$. Sólo tiene sentido construir el
+triedro en los puntos donde la curvatura no se anula.
+
+\begin{infobox}[orangeacc]{Definición 2.1 (Triedro de Frenet)}
+En cada punto con $\kappa>0$ se definen:
+\begin{align}
+  \mathbf{T}(s) &= \alpha'(s), \\
+  \mathbf{N}(s) &= \frac{\mathbf{T}'(s)}{\|\mathbf{T}'(s)\|}, \\
+  \mathbf{B}(s) &= \mathbf{T}(s)\times\mathbf{N}(s).
+\end{align}
+El par $\{\mathbf{T},\mathbf{N},\mathbf{B}\}$ es ortonormal dextrógico.
+\end{infobox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.3]
+  \def\R{1.3}% radio de curvatura en P
+  % curva y = x^2/(2R): curvatura en P igual a 1/R
+  \draw[orangeacc,very thick,domain=-2.4:2.4,samples=60,variable=\q]
+    plot ({\q},{\q*\q/(2*\R)});
+  % círculo osculador: tangente a la curva en P, radio R, centro en (0,R)
+  \draw[graymuted,dashed] (0,\R) circle (\R);
+  \fill[graymuted] (0,\R) circle (1.2pt);
+  \node[graymuted,right,align=left] at (0.08,\R) {\scriptsize centro de\\[-2pt]\scriptsize curvatura};
+  \fill[blackmain] (0,0) circle (2.2pt);
+  \node[blackmain,below right] at (0,0) {$P$};
+  % T, N en el plano osculador; B sale hacia el observador (perspectiva)
+  \draw[->,blackmain,very thick] (0,0) -- (1.3,0) node[right] {$\mathbf{T}$};
+  \draw[->,blackmain,very thick] (0,0) -- (0,0.9) node[above left] {$\mathbf{N}$};
+  \draw[->,blackmain,very thick] (0,0) -- (-0.6,-0.6) node[below left] {$\mathbf{B}$};
+  \draw[graymuted] (0.18,0) -- (0.18,0.18) -- (0,0.18);
+\end{tikzpicture}
+\caption{El triedro de Frenet en un punto de la curva. $\mathbf{T}$ es
+tangente; $\mathbf{N}$ apunta hacia el centro del círculo osculador
+(punteado, de radio $1/\kappa$); $\mathbf{B}=\mathbf{T}\times\mathbf{N}$
+sale del plano osculador hacia el observador (proyección oblicua).}
+\label{fig:triedro}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{Por qué $\mathbf{N}$ es ortogonal a $\mathbf{T}$}
+
+Como $\|\mathbf{T}\|=1$, derivando $\mathbf{T}\cdot\mathbf{T}=1$ se obtiene
+$2\,\mathbf{T}\cdot\mathbf{T}'=0$: la derivada de un vector unitario es
+siempre perpendicular a él. Esa es la razón geométrica por la que la
+dirección de giro vive en un plano ortogonal a la tangente.
+
+% =====================================================================
+\manualsection{3. Curvatura y torsión: los dos invariantes}
+
+Las dos funciones que codifican la forma de la curva miden ``cuánto gira''
+el triedro al avanzar.
+
+\begin{infobox}[orangeacc]{Definición 3.1 (Curvatura y torsión)}
+\begin{align}
+  \kappa(s) &= \|\mathbf{T}'(s)\| = \|\alpha''(s)\| \ge 0, \\
+  \tau(s) &= -\mathbf{B}'(s)\cdot\mathbf{N}(s).
+\end{align}
+La \term{curvatura} mide cuánto se dobla la curva en su plano osculador;
+la \term{torsión} mide cuánto se separa del plano, es decir, cuánto gira
+$\mathbf{B}$ alrededor de $\mathbf{T}$.
+\end{infobox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.1]
+  % Panel izquierdo: parábola y = x^2/4, T = (1, x/2)/norma
+  \begin{scope}
+    \node[blackmain,align=center] at (0,2.7) {\small\textbf{Curvatura $\kappa>0$}\\ \small $\mathbf{T}$ cambia de dirección};
+    \draw[orangeacc,very thick,domain=-2.2:2.2,samples=50,variable=\q]
+      plot ({\q},{0.25*\q*\q});
+    \foreach \x in {-1.8,-0.9,0,0.9,1.8} {
+      \pgfmathsetmacro{\nrm}{sqrt(1+(0.5*(\x))^2)}
+      \fill[blackmain] (\x,{0.25*\x*\x}) circle (1.3pt);
+      \draw[->,blackmain,thick] (\x,{0.25*\x*\x}) -- ++({0.8/\nrm},{0.4*\x/\nrm});
+    }
+  \end{scope}
+  % Panel derecho: recta de pendiente 1/4.4
+  \begin{scope}[xshift=7cm]
+    \node[blackmain,align=center] at (0,2.7) {\small\textbf{Recta: $\kappa=0$}\\ \small $\mathbf{T}$ constante};
+    \draw[orangeacc,very thick] (-2.2,0.4) -- (2.2,1.4);
+    \foreach \x in {-1.8,-0.9,0,0.9,1.8} {
+      \fill[blackmain] (\x,{0.4+(\x+2.2)*10/44}) circle (1.3pt);
+      \draw[->,blackmain,thick] (\x,{0.4+(\x+2.2)*10/44}) -- ++({0.8*0.9762},{0.8*0.2169});
+    }
+  \end{scope}
+\end{tikzpicture}
+\caption{La curvatura es la \emph{rapidez} con la que cambia la dirección
+tangente. A la izquierda, los vectores $\mathbf{T}$ (de longitud unitaria,
+dibujados a escala común) rotan de forma continua al recorrer la parábola.
+Una recta tiene curvatura $0$ porque su tangente no cambia.}
+\label{fig:curvatura}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95]
+  % Panel 1: curva plana. Plano dibujado como paralelogramo (proyección oblicua):
+  % punto (u,v) del plano -> (u+0.5v, 0.6v). B es perpendicular al plano (vertical).
+  \begin{scope}
+    \node[blackmain,align=center] at (0.5,2.9) {\small\textbf{Curva plana}\\ \small $\tau=0$};
+    \fill[orangeacc!10] (-2.2,0) -- (2.2,0) -- (3.1,1.08) -- (-1.3,1.08) -- cycle;
+    \draw[graymuted,dashed] (-2.2,0) -- (2.2,0) -- (3.1,1.08) -- (-1.3,1.08) -- cycle;
+    \draw[orangeacc,very thick,domain=-1.6:1.6,samples=40,variable=\q]
+      plot ({\q+0.5*(0.5+0.9*(1-\q*\q/3))},{0.6*(0.5+0.9*(1-\q*\q/3))});
+    \foreach \q in {-1,0,1} {
+      \pgfmathsetmacro{\vv}{0.5+0.9*(1-(\q)*(\q)/3)}
+      \fill[blackmain] ({\q+0.5*\vv},{0.6*\vv}) circle (1.4pt);
+      \draw[->,blackmain,thick] ({\q+0.5*\vv},{0.6*\vv}) -- ++(0,0.9);
+    }
+    \node[graymuted,anchor=north west] at (-2.2,0) {\small plano osculador};
+    \node[blackmain] at (0.5,-0.9) {\small $\mathbf{B}\perp$ plano, constante};
+  \end{scope}
+  % Panel 2: hélice (a=1.1, b=0.3, 1.25 vueltas). B = (b sin t, -b cos t, a)/c
+  \begin{scope}[xshift=7cm]
+    \def\ha{1.1}\def\hb{0.3}\def\hk{0.2}
+    \pgfmathsetmacro{\hh}{\hb*450*pi/180}
+    \pgfmathsetmacro{\hey}{\hk*\ha}
+    \node[blackmain,align=center] at (0,3.4) {\small\textbf{Hélice}\\ \small $\tau\neq0$};
+    \draw[graymuted,dashed] (0,0) ellipse ({\ha} and {\hey});
+    \draw[graymuted,dashed] (0,\hh) ellipse ({\ha} and {\hey});
+    \draw[graymuted] (-\ha,0) -- (-\ha,\hh) (\ha,0) -- (\ha,\hh);
+    \draw[orangeacc,very thick,domain=0:450,samples=120,smooth,variable=\q]
+      plot ({\ha*cos(\q)},{\hb*\q*pi/180+\hey*sin(\q)});
+    \helixB{\ha}{\hb}{\hk}{200}{0}{0.9}
+    \helixB{\ha}{\hb}{\hk}{270}{0}{0.9}
+    \helixB{\ha}{\hb}{\hk}{340}{0}{0.9}
+    \node[blackmain] at (0,-0.9) {\small $\mathbf{B}$ gira alrededor de $\mathbf{T}$};
+  \end{scope}
+\end{tikzpicture}
+\caption{La torsión mide cuánto sale la curva de su plano osculador. En una
+curva plana, $\mathbf{B}$ es perpendicular al plano, por lo que es constante
+y $\tau=0$. En una hélice el plano osculador cambia de punto a punto y
+$\mathbf{B}$ cambia de dirección (proyección del vector exacto
+$(b\sin t,-b\cos t,a)/\sqrt{a^2+b^2}$), de modo que $\tau\neq0$.}
+\label{fig:torsion}
+\end{figure}
+\FloatBarrier
+
+% =====================================================================
+\manualsection{4. Las fórmulas de Frenet--Serret}
+
+Estas tres ecuaciones diferenciales son el ``ADN'' de la curva: expresan las
+derivadas del triedro en función del propio triedro y de $\kappa$ y $\tau$.
+
+\begin{theorembox}{Teorema 4.1 (Fórmulas de Frenet--Serret)}
+Para una curva de rapidez unitaria con $\kappa(s)>0$:
+\begin{align}
+  \mathbf{T}'(s) &= \phantom{-}\kappa(s)\,\mathbf{N}(s), \\
+  \mathbf{N}'(s) &= -\kappa(s)\,\mathbf{T}(s) + \tau(s)\,\mathbf{B}(s), \\
+  \mathbf{B}'(s) &= \phantom{-\kappa(s)\,\mathbf{T}(s)}-\tau(s)\,\mathbf{N}(s).
+\end{align}
+En forma matricial:
+\begin{equation}
+  \frac{d}{ds}
+  \begin{pmatrix} \mathbf{T} \\ \mathbf{N} \\ \mathbf{B} \end{pmatrix}
+  =
+  \begin{pmatrix}
+    0 & \kappa & 0 \\
+    -\kappa & 0 & \tau \\
+    0 & -\tau & 0
+  \end{pmatrix}
+  \begin{pmatrix} \mathbf{T} \\ \mathbf{N} \\ \mathbf{B} \end{pmatrix}.
+\end{equation}
+La matriz es \term{antisimétrica}: esto es lo que garantiza que el triedro
+siga siendo ortonormal y dextrógico a lo largo del movimiento.
+\end{theorembox}
+
+\manualsubsection{Demostración}
+
+La primera fórmula es la definición de $\mathbf{N}$. Para la tercera:
+derivando $\mathbf{B}\cdot\mathbf{B}=1$ se tiene $\mathbf{B}'\cdot\mathbf{B}=0$,
+y derivando $\mathbf{B}\cdot\mathbf{T}=0$ se tiene
+$\mathbf{B}'\cdot\mathbf{T}=-\mathbf{B}\cdot\mathbf{T}'=-\kappa\,\mathbf{B}\cdot\mathbf{N}=0$.
+Por tanto $\mathbf{B}'$ es un múltiplo de $\mathbf{N}$, y por la definición de
+$\tau$ ese múltiplo es $-\tau$.
+
+La segunda fórmula es la única que requiere un cálculo más. Escribimos
+$\mathbf{N}'$ en la base $\{\mathbf{T},\mathbf{N},\mathbf{B}\}$:
+\[
+  \mathbf{N}' = (\mathbf{N}'\cdot\mathbf{T})\,\mathbf{T}
+              + (\mathbf{N}'\cdot\mathbf{N})\,\mathbf{N}
+              + (\mathbf{N}'\cdot\mathbf{B})\,\mathbf{B}.
+\]
+Calculamos cada coeficiente derivando las relaciones de ortonormalidad:
+\begin{itemize}
+  \item De $\mathbf{N}\cdot\mathbf{N}=1$ se sigue $\mathbf{N}'\cdot\mathbf{N}=0$.
+  \item De $\mathbf{N}\cdot\mathbf{T}=0$: derivando,
+        $\mathbf{N}'\cdot\mathbf{T} + \mathbf{N}\cdot\mathbf{T}'=0$, y como
+        $\mathbf{T}'=\kappa\mathbf{N}$ y $\mathbf{N}\cdot\mathbf{N}=1$,
+        $\mathbf{N}'\cdot\mathbf{T}=-\kappa$.
+  \item De $\mathbf{N}\cdot\mathbf{B}=0$: derivando,
+        $\mathbf{N}'\cdot\mathbf{B} + \mathbf{N}\cdot\mathbf{B}'=0$, y como
+        $\mathbf{B}'=-\tau\mathbf{N}$ y $\mathbf{N}\cdot\mathbf{N}=1$,
+        $\mathbf{N}'\cdot\mathbf{B}=\tau$.
+\end{itemize}
+Sustituyendo se obtiene $\mathbf{N}'=-\kappa\mathbf{T}+\tau\mathbf{B}$. \hfill $\square$
+
+% =====================================================================
+\manualsection{5. El vector de Darboux: interpretación cinemática}
+
+El movimiento del triedro al desplazarse es una \emph{rotación rígida
+instantánea}. El eje y la velocidad angular de esa rotación los recoge el
+\term{vector de Darboux}.
+
+\begin{infobox}[orangeacc]{Definición 5.1 (Vector de Darboux)}
+\begin{equation}
+  \bm{\omega}(s) = \tau(s)\,\mathbf{T}(s) + \kappa(s)\,\mathbf{B}(s).
+\end{equation}
+Con él, las tres fórmulas de Frenet--Serret se escriben como productos
+vectoriales:
+\begin{equation}
+  \mathbf{T}' = \bm{\omega}\times\mathbf{T},\qquad
+  \mathbf{N}' = \bm{\omega}\times\mathbf{N},\qquad
+  \mathbf{B}' = \bm{\omega}\times\mathbf{B}.
+\end{equation}
+\end{infobox}
+
+Es decir: cuando recorremos la curva con velocidad unitaria, el triedro
+gira con velocidad angular $\bm{\omega}$. Si $\kappa=\tau=0$ no hay
+rotación (la curva es una recta); si $\tau=0$ la rotación es puramente
+alrededor de $\mathbf{B}$ (la curva es plana).
+
+% =====================================================================
+\manualsection{6. Parametrización arbitraria: fórmulas prácticas}
+
+En la práctica nadie reparametriza por longitud de arco: las integrales
+$\int\|\alpha'(t)\|\,dt$ rara vez son elementales. Por suerte, todo el
+aparato de Frenet se puede calcular directamente a partir de las derivadas
+de $\alpha$ respecto de un parámetro $t$ cualquiera. La clave es que
+$\dfrac{d}{dt}=v(t)\dfrac{d}{ds}$ con $v(t)=\|\alpha'(t)\|$.
+
+\begin{theorembox}{Teorema 6.1 (Aparato de Frenet sin reparametrizar)}
+Sea $\alpha(t)$ regular con $v=\|\alpha'\|$ y supongamos $\alpha'\times\alpha''\neq0$. Entonces
+\begin{align}
+  \mathbf{T}(t) &= \frac{\alpha'(t)}{\|\alpha'(t)\|}, \\[2pt]
+  \mathbf{B}(t) &= \frac{\alpha'(t)\times\alpha''(t)}{\|\alpha'(t)\times\alpha''(t)\|}, \\[2pt]
+  \mathbf{N}(t) &= \mathbf{B}(t)\times\mathbf{T}(t), \\[2pt]
+  \kappa(t) &= \frac{\|\alpha'(t)\times\alpha''(t)\|}{\|\alpha'(t)\|^3}, \\[2pt]
+  \tau(t) &= \frac{\bigl(\alpha'(t)\times\alpha''(t)\bigr)\cdot\alpha'''(t)}
+                  {\|\alpha'(t)\times\alpha''(t)\|^2}.
+\end{align}
+\end{theorembox}
+
+\begin{infobox}[blackmain]{¿Por qué el producto cruz da $\mathbf{B}$?}
+La aceleración tiene componente tangencial y normal:
+$\alpha'' = v'\,\mathbf{T} + v^2\kappa\,\mathbf{N}$. Entonces
+$\alpha'\times\alpha'' = (v\mathbf{T})\times(v^2\kappa\mathbf{N}) = v^3\kappa\,
+(\mathbf{T}\times\mathbf{N}) = v^3\kappa\,\mathbf{B}$: la parte tangencial
+desaparece. Normalizando se obtiene $\mathbf{B}$ sin tener que reparametrizar.
+\end{infobox}
+
+La velocidad y la aceleración también tienen lectura geométrica directa:
+\begin{align}
+  \alpha'(t) &= v(t)\,\mathbf{T}(t), \\
+  \alpha''(t) &= v'(t)\,\mathbf{T}(t) + v(t)^2\kappa(t)\,\mathbf{N}(t).
+\end{align}
+La segunda dice que la aceleración se descompone en un cambio del
+\emph{módulo} de la velocidad (tangencial) y un cambio de \emph{dirección}
+(normal, ``centrípeta'').
+
+% =====================================================================
+\manualsection{7. Curvas especiales: la firma de $\kappa$ y $\tau$}
+
+Las funciones $\kappa$ y $\tau$ identifican por completo el tipo de curva.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{lll}
+  \textbf{Curva} & \textbf{Curvatura} & \textbf{Torsión} \\ \hline
+  Recta & $\kappa\equiv0$ & (no definida) \\
+  Curva plana & $\kappa>0$ & $\tau\equiv0$ \\
+  Circunferencia de radio $R$ & $\kappa=1/R$ (cte.) & $\tau\equiv0$ \\
+  Hélice circular & $\kappa>0$ constante & $\tau\neq0$ constante \\
+  Hélice general sobre cilindro & $\kappa>0$ & $\tau/\kappa$ constante
+\end{tabular}
+\end{center}
+
+(En una recta, $\mathbf{T}'=0$ y $\mathbf{N}$ no está definida, por lo que la
+torsión carece de sentido; por convención se suele tomar $\tau=0$.)
+El recíproco de la tabla también es cierto: por ejemplo, una curva con
+$\kappa$ y $\tau$ ambas constantes y $\kappa>0$, $\tau\neq 0$ es
+necesariamente una hélice circular (salvo isometría). La hélice general se
+caracteriza porque su tangente forma un ángulo constante con una dirección
+fija del espacio (teorema de Lancret).
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.0]
+  \def\ha{1.2}\def\hb{0.28}\def\hk{0.2}
+  \pgfmathsetmacro{\hh}{\hb*720*pi/180}
+  \pgfmathsetmacro{\hey}{\hk*\ha}
+  \draw[graymuted,dashed] (0,0) ellipse ({\ha} and {\hey});
+  \draw[graymuted,dashed] (0,\hh) ellipse ({\ha} and {\hey});
+  \draw[graymuted] (-\ha,0) -- (-\ha,\hh) (\ha,0) -- (\ha,\hh);
+  \draw[orangeacc,very thick,domain=0:720,samples=160,smooth,variable=\q]
+    plot ({\ha*cos(\q)},{\hb*\q*pi/180+\hey*sin(\q)});
+  % triedro exacto en un punto de la parte frontal (t = 315 grados)
+  \helixframe{\ha}{\hb}{\hk}{315}{0}{1.0}
+\end{tikzpicture}
+\caption{Hélice circular $(a\cos t,a\sin t,bt)$ sobre un cilindro, con
+$a=1.2$, $b=0.28$ (proyección oblicua). El triedro es la proyección exacta de
+$\mathbf{T},\mathbf{N},\mathbf{B}$: $\mathbf{N}$ apunta horizontalmente al
+eje del cilindro, y $\mathbf{T}$ y $\mathbf{B}$ forman con el eje ángulos
+constantes. Tanto $\kappa$ como $\tau$ son constantes.}
+\label{fig:helice}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{Ejemplo resuelto: la hélice circular}
+
+Consideremos $\alpha(t)=(a\cos t,\,a\sin t,\,bt)$ con $a>0$.
+
+\begin{examplebox}{Ejemplo 7.1 (Aparato de Frenet de la hélice)}
+La rapidez es $v=\sqrt{a^2+b^2}=:c$, constante.
+\begin{itemize}
+  \item \termb{Tangente:}
+  $\mathbf{T} = \dfrac{1}{c}(-a\sin t,\,a\cos t,\,b)$.
+  \item \termb{Aceleración y curvatura:} $\alpha''=(-a\cos t,\,-a\sin t,\,0)$,
+  $\alpha'\times\alpha''=(ab\sin t,\,-ab\cos t,\,a^2)$ y
+  $\|\alpha'\times\alpha''\| = a\,c$. Por tanto
+  \[
+    \kappa = \frac{a\,c}{c^3} = \frac{a}{a^2+b^2}.
+  \]
+  \item \termb{Binormal:} $\mathbf{B} = \dfrac{1}{c}(b\sin t,\,-b\cos t,\,a)$.
+  \item \termb{Normal:} $\mathbf{N} = \mathbf{B}\times\mathbf{T}=(-\cos t,\,-\sin t,\,0)$,
+  que apunta horizontalmente hacia el eje del cilindro.
+  \item \termb{Torsión:} $\alpha'''=(a\sin t,\,-a\cos t,\,0)$ y
+  $(\alpha'\times\alpha'')\cdot\alpha'''=a^2b$, luego
+  \[
+    \tau = \frac{a^2b}{a^2c^2} = \frac{b}{a^2+b^2}.
+  \]
+\end{itemize}
+Tanto $\kappa$ como $\tau$ son constantes e independientes de $t$. \hfill
+$\blacksquare$
+\end{examplebox}
+
+% =====================================================================
+\manualsection{8. Forma local: aproximación de Taylor y proyecciones}
+
+Para ``ver'' la curva muy cerca de un punto, expandimos $\alpha$ en serie
+de Taylor y usamos Frenet--Serret para expresar las derivadas.
+
+\[
+  \alpha(s) = \alpha(0) + s\,\alpha'(0) + \tfrac{s^2}{2}\,\alpha''(0)
+            + \tfrac{s^3}{6}\,\alpha'''(0) + O(s^4).
+\]
+Usando $\alpha'=\mathbf{T}$, $\alpha''=\kappa\mathbf{N}$ y
+$\alpha'''=-\kappa^2\mathbf{T}+\kappa'\mathbf{N}+\kappa\tau\mathbf{B}$
+(en $s=0$, con $\kappa_0=\kappa(0)$, $\tau_0=\tau(0)$, etc.), queda,
+tomando $\alpha(0)$ como origen y los ejes $\mathbf{T}_0,\mathbf{N}_0,\mathbf{B}_0$:
+\begin{align}
+  x(s) &= s - \frac{\kappa_0^2 s^3}{6} + O(s^4), \\
+  y(s) &= \frac{\kappa_0 s^2}{2} + \frac{\kappa_0' s^3}{6} + O(s^4), \\
+  z(s) &= \frac{\kappa_0\tau_0 s^3}{6} + O(s^4).
+\end{align}
+
+Cada proyección sobre un plano coordenado del triedro nos dice qué se ve
+al ``mirar la curva'' desde la dirección perpendicular:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{lll}
+  \textbf{Plano} & \textbf{Coordenadas} & \textbf{Forma local} \\ \hline
+  Osculador & $(x,y)$ & parábola $y \approx \frac{\kappa_0}{2}x^2$ \\
+  Rectificante & $(x,z)$ & cúbica $z \approx \frac{\kappa_0\tau_0}{6}x^3$ \\
+  Normal & $(y,z)$ & cúspide $z^2 \approx \frac{2\tau_0^2}{9\kappa_0}y^3$
+\end{tabular}
+\end{center}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=0.95]
+  % Plano osculador: y = 0.55 x^2
+  \begin{scope}
+    \node[blackmain,align=center] at (0,3.2) {\small\textbf{Osculador} $(x,y)$\\ \small $y\approx\frac{\kappa_0}{2}x^2$};
+    \draw[graymuted,->] (-2,0)--(2,0) node[right] {\small$x$};
+    \draw[graymuted,->] (0,-0.3)--(0,2.2) node[above] {\small$y$};
+    \draw[orangeacc,very thick,domain=-1.7:1.7,samples=60,variable=\q]
+      plot ({\q},{0.55*\q*\q});
+  \end{scope}
+  % Plano rectificante: z = 0.35 x^3
+  \begin{scope}[xshift=5.4cm]
+    \node[blackmain,align=center] at (0,3.2) {\small\textbf{Rectificante} $(x,z)$\\ \small $z\approx\frac{\kappa_0\tau_0}{6}x^3$};
+    \draw[graymuted,->] (-2,0)--(2,0) node[right] {\small$x$};
+    \draw[graymuted,->] (0,-2.2)--(0,2.2) node[above] {\small$z$};
+    \draw[orangeacc,very thick,domain=-1.7:1.7,samples=60,variable=\q]
+      plot ({\q},{0.35*\q*\q*\q});
+  \end{scope}
+  % Plano normal: y = q^2, z = q^3  (z^2 = y^3), cúspide hacia +N
+  \begin{scope}[xshift=10.8cm]
+    \node[blackmain,align=center] at (0.6,3.2) {\small\textbf{Normal} $(y,z)$\\ \small $z^2\approx\frac{2\tau_0^2}{9\kappa_0}y^3$};
+    \draw[graymuted,->] (-0.3,0)--(2.2,0) node[right] {\small$y$};
+    \draw[graymuted,->] (0,-2.2)--(0,2.2) node[above] {\small$z$};
+    \draw[orangeacc,very thick,domain=-1.2:1.2,samples=80,variable=\q]
+      plot ({\q*\q},{\q*\q*\q});
+  \end{scope}
+\end{tikzpicture}
+\caption{Las tres proyecciones ortogonales de la curva sobre los planos del
+triedro (escalas ilustrativas, con $\kappa_0,\tau_0>0$). Sobre el plano
+osculador se ve una parábola; sobre el rectificante una cúbica; sobre el
+normal una cúspide semicúbica (parábola de Neile) cuya punta apunta hacia
+$+\mathbf{N}$.}
+\label{fig:taylor}
+\end{figure}
+\FloatBarrier
+
+% =====================================================================
+\manualsection{9. Teorema fundamental de la teoría local de curvas}
+
+\begin{theorembox}{Teorema 9.1 (Congruencia)}
+Dadas funciones suaves $\kappa(s)>0$ y $\tau(s)$ definidas en un intervalo
+$I$, existe una curva $\alpha:I\to\mathbb{R}^3$ parametrizada por longitud
+de arco cuya curvatura y torsión son exactamente $\kappa$ y $\tau$. Además
+es única salvo isometría rígida de $\mathbb{R}^3$ (traslación y rotación
+que conservan la orientación).
+\end{theorembox}
+
+Dicho de otro modo: \emph{$\kappa$ y $\tau$ son la ``huella dactilar''
+de la curva}. Dos curvas con las mismas $\kappa$ y $\tau$ son la misma
+curva, sólo que posiblemente colocada de otra manera en el espacio.
+Las fórmulas de Frenet--Serret son a la vez la demostración de existencia
+(se resuelve un sistema lineal de EDO) y de unicidad (dos soluciones
+difieren en una rotación constante del marco y una traslación de la curva).
+
+% =====================================================================
+\manualsection{10. Curvas sobre superficies: el triedro de Darboux}
+
+Cuando la curva $\alpha(s)$ está contenida en una superficie
+$M\subset\mathbb{R}^3$, el triedro de Frenet no es el más natural: la
+superficie impone una dirección normal privilegiada. Se usa entonces el
+\term{triedro de Darboux} $\{\mathbf{T},\mathbf{V},\mathbf{U}\}$, con
+$\mathbf{U}$ normal a la superficie y $\mathbf{V}=\mathbf{U}\times\mathbf{T}$
+tangente a la superficie y perpendicular a la curva.
+
+\begin{infobox}[orangeacc]{Definición 10.1 (Triedro de Darboux)}
+\begin{align}
+  \mathbf{T} &= \alpha'(s) \quad\text{(tangente a la curva y a la superficie)}, \\
+  \mathbf{U} &= \text{normal unitaria a la superficie en }\alpha(s), \\
+  \mathbf{V} &= \mathbf{U}\times\mathbf{T}.
+\end{align}
+\end{infobox}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=Stealth,scale=1.5]
+  % Superficie: cúpula h(u,v) = 1 - 0.14(u^2+v^2). Proyección oblicua:
+  %   (u,v,h) -> (u + 0.5 v, 0.6 v + h).   Punto P = (0,0): cima, h = 1.
+  % Plano tangente en P: horizontal, generado por T=(1,0) y V=(0.5,0.6); U vertical.
+  \draw[graymuted,thick,fill=creambg]
+    plot[domain=-2.2:2.2,samples=30,variable=\q]
+      ({\q-0.75},{-0.9+1-0.14*(\q*\q+2.25)})
+    -- plot[domain=-1.5:1.5,samples=20,variable=\w]
+      ({2.2+0.5*\w},{0.6*\w+1-0.14*(4.84+\w*\w)})
+    -- plot[domain=2.2:-2.2,samples=30,variable=\q]
+      ({\q+0.75},{0.9+1-0.14*(\q*\q+2.25)})
+    -- plot[domain=1.5:-1.5,samples=20,variable=\w]
+      ({-2.2+0.5*\w},{0.6*\w+1-0.14*(4.84+\w*\w)})
+    -- cycle;
+  % malla: v = cte  y  u = cte
+  \foreach \vv in {-0.75,0,0.75} {
+    \draw[graymuted!50,domain=-2.2:2.2,samples=30,variable=\q]
+      plot ({\q+0.5*(\vv)},{0.6*(\vv)+1-0.14*(\q*\q+(\vv)*(\vv))});
+  }
+  \foreach \uu in {-1.5,-0.75,0,0.75,1.5} {
+    \draw[graymuted!50,domain=-1.5:1.5,samples=20,variable=\w]
+      plot ({\uu+0.5*\w},{0.6*\w+1-0.14*((\uu)*(\uu)+\w*\w)});
+  }
+  % plano tangente en P (paralelogramo)
+  \draw[graymuted,dashed,fill=orangeacc,fill opacity=0.12]
+    (-1.35,0.58) -- (0.65,0.58) -- (1.35,1.42) -- (-0.65,1.42) -- cycle;
+  % curva sobre la superficie: u = s, v = 0.12 s^2 (tangente en P = T)
+  \draw[orangeacc,very thick,domain=-1.9:1.9,samples=60,variable=\q]
+    plot ({\q+0.06*\q*\q},{0.072*\q*\q+1-0.14*(\q*\q+0.0144*\q*\q*\q*\q)});
+  \fill[blackmain] (0,1) circle (2.2pt);
+  \node[blackmain,below left] at (0,1) {$P$};
+  \draw[->,blackmain,very thick] (0,1) -- ++(1.1,0) node[right] {$\mathbf{T}$};
+  \draw[->,blackmain,very thick] (0,1) -- ++(0.45,0.54) node[above right] {$\mathbf{V}$};
+  \draw[->,blackmain,very thick] (0,1) -- ++(0,1.1) node[above] {$\mathbf{U}$};
+\end{tikzpicture}
+\caption{El triedro de Darboux sobre una superficie (cúpula), en proyección
+oblicua. $\mathbf{T}$ es tangente a la curva; $\mathbf{U}$ es normal a la
+superficie (perpendicular al plano tangente, punteado);
+$\mathbf{V}=\mathbf{U}\times\mathbf{T}$ es tangente a la superficie,
+perpendicular a la curva, y apunta hacia el fondo (dextrógiro).}
+\label{fig:darboux}
+\end{figure}
+\FloatBarrier
+
+\manualsubsection{Descomposición de la aceleración}
+
+La aceleración espacial $\alpha''=\kappa\mathbf{N}$ se descompone ahora en
+una parte \emph{intrínseca} (en el plano tangente a la superficie) y otra
+\emph{extrínseca} (normal a la superficie):
+\begin{equation}
+  \alpha''(s) = \kappa_g(s)\,\mathbf{V}(s) + \kappa_n(s)\,\mathbf{U}(s),
+  \qquad\text{con}\qquad
+  \kappa^2 = \kappa_g^2 + \kappa_n^2.
+\end{equation}
+
+\begin{itemize}
+  \item \term{Curvatura geodésica} $\kappa_g=\alpha''\cdot\mathbf{V}$.
+  Mide cuánto ``vira'' la curva \emph{dentro} de la superficie. Si
+  $\kappa_g\equiv0$, la curva es una \term{geodésica}: su aceleración es
+  puramente normal a la superficie y se ve ``recta'' desde dentro de ella.
+  \item \term{Curvatura normal} $\kappa_n=\alpha''\cdot\mathbf{U}$.
+  Mide cuánto se dobla la curva por efecto de la forma de la superficie en
+  el espacio. Por el \term{teorema de Meusnier}, $\kappa_n=\kappa\cos\theta$,
+  con $\theta$ el ángulo entre $\mathbf{N}$ y $\mathbf{U}$; en particular
+  $\kappa_n$ sólo depende del punto y de la dirección tangente, es decir,
+  todas las curvas sobre la superficie que pasan por $p$ con la misma
+  tangente tienen la misma curvatura normal.
+  \item \term{Torsión geodésica} $\tau_g=-\mathbf{U}'\cdot\mathbf{V}$.
+  Mide la rotación de la normal a la superficie alrededor de la tangente.
+  Si $\tau_g\equiv0$, la curva es una \term{línea de curvatura}.
+\end{itemize}
+
+Las ecuaciones cinemáticas del triedro de Darboux son la versión ``con
+superficie'' de Frenet--Serret:
+\begin{equation}
+  \frac{d}{ds}
+  \begin{pmatrix} \mathbf{T} \\ \mathbf{V} \\ \mathbf{U} \end{pmatrix}
+  =
+  \begin{pmatrix}
+    0 & \kappa_g & \kappa_n \\
+    -\kappa_g & 0 & \tau_g \\
+    -\kappa_n & -\tau_g & 0
+  \end{pmatrix}
+  \begin{pmatrix} \mathbf{T} \\ \mathbf{V} \\ \mathbf{U} \end{pmatrix}.
+\end{equation}
+Otra vez la matriz es antisimétrica: la ortonormalidad del triedro se
+conserva automáticamente. Cuando $\kappa_g=\tau_g=0$ sobre todo el
+intervalo, la curva es a la vez geodésica y línea de curvatura, como los
+círculos máximos de una esfera.
+
+% =====================================================================
+\manualsection{11. Relación con las formas de conexión de Cartan}
+
+Para cerrar el círculo con la teoría moderna (y con la sección de formas
+diferenciales), las fórmulas de Frenet--Serret son el caso unidimensional
+del método de \emph{marcos móviles} de Élie Cartan. Sobre una base
+ortonormal móvil $\{e_1,e_2,e_3\}$ la variación se codifica en 1-formas
+de conexión $\omega_{ij}=-\omega_{ji}$ mediante
+\[
+  de_i = \sum_{j=1}^3 \omega_{ij}\,e_j .
+\]
+Restringiendo el marco a la curva y tomando $e_1=\mathbf{T}$,
+$e_2=\mathbf{N}$, $e_3=\mathbf{B}$ se identifican
+\[
+  \omega_{12} = \kappa\,ds,\qquad
+  \omega_{23} = \tau\,ds,\qquad
+  \omega_{13} = 0,
+\]
+y las ecuaciones estructurales de Cartan se reducen exactamente a las
+fórmulas de Frenet--Serret. Las dos funciones $\kappa$ y $\tau$ son, en
+este lenguaje, los coeficientes de las formas de conexión restringidas a
+la curva.
+
+\begin{infobox}[blackmain]{Idea para llevar}
+El triedro de Frenet--Serret no es un artificio: es la manera más económica
+de describir la forma de una curva. Dos funciones ($\kappa$ y $\tau$)
+gobiernan la evolución de un marco ortonormal de tres vectores, y el
+teorema de congruencia garantiza que no se pierde ninguna información.
+Sobre una superficie, el papel lo asume el triedro de Darboux, y las tres
+curvaturas $\kappa_g,\kappa_n,\tau_g$ cuentan la historia completa.
+\end{infobox}
+
+\end{document}
